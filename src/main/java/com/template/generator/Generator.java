@@ -242,8 +242,7 @@ public class Generator {
             writer.write("import java.util.List;\n");
             writer.write("import " + completeClassPath("*", getConstant(ENTITY_PACKAGE, projectObject.getProjectName())) + ";\n");
             writer.write("import " + completeClassPath("*", getConstant(REPO_PACKAGE, projectObject.getProjectName())) + ";\n");
-            writer.write("import " + completeClassPath("*", getConstant(REQUEST_PACKAGE, projectObject.getProjectName())) + ";\n");
-            writer.write("import " + completeClassPath("*", getConstant(RESPONSE_PACKAGE, projectObject.getProjectName())) + ";\n");
+            writer.write("import " + completeClassPath("*", getConstant(REQUEST_PACKAGE, projectObject.getProjectName())) + ";\n\n");
 
             writer.write("@RequiredArgsConstructor\n");
             writer.write("@Slf4j\n");
