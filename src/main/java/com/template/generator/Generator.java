@@ -343,8 +343,13 @@ public class Generator {
         changeFiles(projectObject, Paths.get("README.md"));
         changeFiles(projectObject, Paths.get("settings.gradle"));
 
-        changeProperties(projectObject, Paths.get(RESOURCE + "application.properties"));
-        changeProperties(projectObject, Paths.get(RESOURCE + "application-dev.properties"));
+        //changeProperties(projectObject, Paths.get(RESOURCE + "application.properties"));
+        //changeProperties(projectObject, Paths.get(RESOURCE + "application-dev.properties"));
+
+        Path rootPath = Paths.get("src/main/java/com/template");
+
+        renamePackage(projectObject, rootPath);
+        renameProject(projectObject, rootPath);
     }
 
     public static void changeProperties(ProjectObject projectObject, Path source){
@@ -389,9 +394,52 @@ public class Generator {
         }
     }
 
-    public static void changeClasses(ProjectObject projectObject){
+    public static void renameProject(ProjectObject projectObject, Path source){
+        try {
+            Files.move(source, source.resolveSibling(projectObject.getProjectName()));
+        }catch (Exception e){
 
+            System.out.println("Error - rename project");
+        }
     }
+
+    public static void renamePackage(ProjectObject projectObject, Path source){
+        try {
+            System.out.println(Files.isDirectory(source));
+            Files.walk(source).forEach(path -> {
+                if(!Files.isDirectory(path)) {
+                    String line;
+                    List<String> lines = new ArrayList<>();
+
+                    try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+                        while ((line = reader.readLine()) != null) {
+                            if (line.isEmpty()) {
+                                lines.add("\n");
+                            } else {
+                                lines.add(line);
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Error - change file");
+                    }
+
+                    try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+                        for (String lineString : lines) {
+                            writer.write(lineString.replace(DEFAULT_PROJECT_NAME, projectObject.getProjectName()) + "\n");
+                        }
+
+                    } catch (Exception e) {
+                        System.out.println("Error - change file");
+                    }
+                }
+            });
+
+            //Files.move(source, source.resolveSibling(projectObject.getProjectName()));
+        }catch (Exception e){
+            System.out.println("Error - renameFolder");
+        }
+    }
+
 
 
     /*************************** metodos auxiliares *******************/
@@ -644,55 +692,6 @@ public class Generator {
 
         }catch (Exception e){
 
-        }
-    }
-
-    public static void renameFolder(){
-        Path source = Paths.get("src/main/java/com/template/departamento");
-        try {
-            // verifica se e diretorio
-            System.out.println(Files.isDirectory(source));
-            // como mudar nome de diretorio
-            //Files.move(source, source.resolveSibling("teste"));
-
-
-            //Files.walkFileTree(source, new FileVisitor());
-
-            Files.list(source).forEach(path -> {
-                System.out.println(path.getFileName());
-
-                String line;
-                List<String> lines = new ArrayList<>();
-
-                try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)){
-                    while ((line = reader.readLine()) != null) {
-                        if(line.isEmpty()){
-                            lines.add("\n");
-                        }else {
-                            lines.add(line);
-                        }
-                    }
-                }catch (Exception e){
-                    System.out.println("Error - change file");
-                }
-
-                try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)){
-                    for(String lineString : lines){
-                        if(lineString.contains("package")){
-                            writer.write(lineString.replace("departamento", "teste") + "\n");
-                        }else{
-                            writer.write(lineString + "\n");
-                        }
-                    }
-
-                }catch (Exception e){
-                    System.out.println("Error - change file");
-                }
-
-            });
-            Files.move(source, source.resolveSibling("teste"));
-        }catch (Exception e){
-            System.out.println("Error - renameFolder");
         }
     }
 }
