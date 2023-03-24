@@ -6,4 +6,4 @@ RUN ./gradlew build --no-daemon
 
 WORKDIR /build/libs
 
-ENTRYPOINT ["java","-jar","flakkee-verhuizers.jar"]
+ENTRYPOINT ["java","-jar","template.jar"]
