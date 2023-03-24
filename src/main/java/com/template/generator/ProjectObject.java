@@ -13,10 +13,12 @@ public class ProjectObject {
 
     private String projectName;
     private String dbName;
-    private String user;
-    private String pw;
+    private String dbUser;
+    private String dbPw;
     private String dbHost;
     private String dbType;
+    private String dbPlatform;
+    private String dbDriverClass;
 
     private String tokenTime;
     private String tokenExpTime;

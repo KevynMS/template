@@ -355,8 +355,12 @@ public class Generator {
                         lineString
                                 .replace(DEFAULT_PROJECT_NAME, projectObject.getProjectName())
                                 .replace("DBHOST", projectObject.getDbHost())
+                                .replace("DBUSER", projectObject.getDbUser())
+                                .replace("DBPW", projectObject.getDbPw())
                                 .replace("DBNAME", projectObject.getDbName())
                                 .replace("DBTYPE", projectObject.getDbType())
+                                .replace("DBDRIVER", projectObject.getDbDriverClass())
+                                .replace("DBPLATFORM", projectObject.getDbPlatform())
                                 .replace("REDISHOST", projectObject.getRedisHost())
                                 .replace("REDISPORT", projectObject.getRedisPort())
                                 .replace("REDISTIMEOUT", projectObject.getRedisTimeOut())
@@ -461,10 +465,20 @@ public class Generator {
 
                     projectObject.setProjectName(projectValues[0].trim());
                     projectObject.setDbName(projectValues[1].trim());
-                    projectObject.setUser(projectValues[2].trim());
-                    projectObject.setPw(projectValues[3].trim());
+                    projectObject.setDbUser(projectValues[2].trim());
+                    projectObject.setDbPw(projectValues[3].trim());
                     projectObject.setDbHost(projectValues[4].trim());
                     projectObject.setDbType(projectValues[5].trim());
+
+                    // todo create e enum for that
+                    if(projectObject.getDbType().equals("mysql")){
+                        projectObject.setDbDriverClass("com.mysql.cj.jdbc.Driver");
+                        projectObject.setDbPlatform("org.hibernate.dialect.MySQL5InnoDBDialect");
+
+                    }else if(projectObject.getDbType().equals("postgresql")){
+                        projectObject.setDbDriverClass("org.postgresql.Driver");
+                        projectObject.setDbPlatform("org.hibernate.dialect.PostgreSQLDialect");
+                    }
                     continue;
                 }
 
