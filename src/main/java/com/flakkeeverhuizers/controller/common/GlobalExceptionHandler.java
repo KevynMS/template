@@ -29,50 +29,21 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new GlobalErrorResponse(e.getClass().getSimpleName(), e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = {BadRequestResponseException.class})
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public ResponseEntity<GlobalErrorResponse> handleException(BadRequestResponseException e) {
+        log.warn("Bad request: {} : {}", e.getClass(), e.getMessage());
+        log.debug("Bad request", e);
+        return new ResponseEntity<>(new GlobalErrorResponse(e.getClass().getSimpleName(), e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
 
-    @ExceptionHandler(value = {UserNotFoundException.class})
+    @ExceptionHandler(value = {NotFoundResponseException.class})
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    public ResponseEntity<GlobalErrorResponse> handleException(UserNotFoundException e) {
+    public ResponseEntity<GlobalErrorResponse> handleException(NotFoundResponseException e) {
         log.warn("Not found: {} : {}", e.getClass(), e.getMessage());
         log.debug("Not found", e);
         return new ResponseEntity<>(new GlobalErrorResponse(e.getClass().getSimpleName(), e.getMessage()), HttpStatus.NOT_FOUND);
     }
-
-    @ExceptionHandler(value = {AuthenticationException.class})
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public ResponseEntity<GlobalErrorResponse> handleException(AuthenticationException e) {
-        log.warn("Bad request: {} : {}", e.getClass(), e.getMessage());
-        log.debug("Bad request", e);
-        return new ResponseEntity<>(new GlobalErrorResponse(e.getClass().getSimpleName(), e.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-
-    @ExceptionHandler(value = {CSVImportException.class})
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public ResponseEntity<GlobalErrorResponse> handleException(CSVImportException e) {
-        log.warn("Bad request: {} : {}", e.getClass(), e.getMessage());
-        log.debug("Bad request", e);
-        return new ResponseEntity<>(new GlobalErrorResponse(e.getClass().getSimpleName(), e.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-
-    @ExceptionHandler(value = {SignInException.class})
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public ResponseEntity<GlobalErrorResponse> handleException(SignInException e) {
-        log.warn("Bad request: {} : {}", e.getClass(), e.getMessage());
-        log.debug("Bad request", e);
-        return new ResponseEntity<>(new GlobalErrorResponse(e.getClass().getSimpleName(), e.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(value = {RecordNotFoundException.class})
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    public ResponseEntity<GlobalErrorResponse> handleException(RecordNotFoundException e) {
-        log.warn("Not found: {} : {}", e.getClass(), e.getMessage());
-        log.debug("Not found", e);
-        return new ResponseEntity<>(new GlobalErrorResponse(e.getClass().getSimpleName(), e.getMessage()), HttpStatus.NOT_FOUND);
-    }
-
-
 
     @ExceptionHandler(value = {Exception.class})
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)

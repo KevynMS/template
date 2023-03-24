@@ -35,8 +35,6 @@ Swagger UI: http://localhost:8080/swagger/swagger-ui/index.html
 
 ## OpenAPI
 
-Rest methods specification in OpenAPI standard is available here: [flakkee-verhuizers.yaml](flakkee-verhuizers.yaml).
-
 Note: this file is not updated automatically. Developer must update it manually after any changes in Rest methods.
 The newest version can be downloaded from Swagger UI.  
 

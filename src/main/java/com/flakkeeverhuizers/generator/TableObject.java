@@ -12,6 +12,6 @@ public class TableObject {
     private Entity entity;
     private Repo repo;
     private Request request;
-    private String projectName;
+
 
 }

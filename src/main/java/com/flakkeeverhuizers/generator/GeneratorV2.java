@@ -15,36 +15,36 @@ public class GeneratorV2 {
 
 
     public static void main(String[] args) {
-        teste();
+        //teste();
         // ler sql e popular um objeto de conversao  - casa tabla sera mapeado para um objeto - cada objeto vai ser a lista de atributos e nome da tabela - os objetos seram salvos em uma lista
         // varrer essa lista aqui e realizar os processos para cada class
-        List<TableObject> tableObjectList = convertSqlTableToClass(SQL_FILE_PATH);
+        ProjectObject projectObject = convertSqlTableToClass(SQL_FILE_PATH);
 
         // Replace dos nomes pelo nome da aplicacao
 
         // criar entity
-       // createEntity(tableObjectList);
+        //createEntity(projectObject);
 
         // criar request dto a partir da entity
-        //createRequest(tableObjectList);
+        //createRequest(projectObject);
 
         // criar repo
-        //createRepo(tableObjectList);
+        //createRepo(projectObject);
 
         // criar interface de projection que representa o conteudo de retorno
 
         // criar service - service unica - geral
-        //createService(tableObjectList);
+        //createService(projectObject);
 
         // criar controller - controller unica - geral
-         //createController(tableObjectList);
+        //createController(projectObject);
 
         // criar exception
         //createException();
     }
 
-    public static void createEntity(List<TableObject> tableObjectList) {
-        tableObjectList.forEach(tableObject -> createEntity(tableObject.getEntity(), tableObject.getProjectName()));
+    public static void createEntity(ProjectObject projectObject) {
+        projectObject.getTableObjectList().forEach(tableObject -> createEntity(tableObject.getEntity(), projectObject.getProjectName()));
     }
 
     public static void createEntity(Entity entity, String projectName) {
@@ -113,8 +113,8 @@ public class GeneratorV2 {
         }
     }
 
-    public static void createRequest(List<TableObject> tableObjectList) {
-        tableObjectList.forEach(tableObject -> createRequest(tableObject.getRequest(), tableObject.getEntity(), tableObject.getProjectName()));
+    public static void createRequest(ProjectObject projectObject) {
+        projectObject.getTableObjectList().forEach(tableObject -> createRequest(tableObject.getRequest(), tableObject.getEntity(), projectObject.getProjectName()));
     }
 
     public static void createRequest(Request request, Entity entity, String projectName) {
@@ -197,8 +197,8 @@ public class GeneratorV2 {
         }
     }
 
-    public static void createRepo(List<TableObject> tableObjectList){
-        tableObjectList.forEach(tableObject -> createRepo(tableObject.getRepo(), tableObject.getEntity(), tableObject.getProjectName()));
+    public static void createRepo(ProjectObject projectObject){
+        projectObject.getTableObjectList().forEach(tableObject -> createRepo(tableObject.getRepo(), tableObject.getEntity(), projectObject.getProjectName()));
     }
 
 
@@ -242,11 +242,11 @@ public class GeneratorV2 {
         }
     }
 
-    public static void createService(List<TableObject> tableObjectList, String projectName){
-        Path targetPath = Paths.get(getConstant(SERVICE_PATH, projectName) + "GlobalService" + FILE_TYPE );
+    public static void createService(ProjectObject projectObject){
+        Path targetPath = Paths.get(getConstant(SERVICE_PATH, projectObject.getProjectName()) + "GlobalService" + FILE_TYPE );
 
         try (BufferedWriter writer = Files.newBufferedWriter(targetPath, StandardCharsets.UTF_8)) {
-            writer.write(getConstant(SERVICE_PACKAGE, projectName)+"\n\n\n");
+            writer.write(getConstant(SERVICE_PACKAGE, projectObject.getProjectName())+"\n\n\n");
 
             writer.write("import lombok.RequiredArgsConstructor;\n");
             writer.write("import lombok.extern.slf4j.Slf4j;\n");
@@ -254,10 +254,10 @@ public class GeneratorV2 {
 
             writer.write("import java.util.ArrayList;\n");
             writer.write("import java.util.List;\n");
-            writer.write("import " + completeClassPath("*", getConstant(ENTITY_PACKAGE , projectName))+";\n");
-            writer.write("import " + completeClassPath("*", getConstant(REPO_PACKAGE, projectName)) +";\n");
-            writer.write("import " + completeClassPath("*", getConstant(REQUEST_PACKAGE, projectName)) +";\n");
-            writer.write("import " + completeClassPath("*", getConstant(RESPONSE_PACKAGE, projectName)) +";\n");
+            writer.write("import " + completeClassPath("*", getConstant(ENTITY_PACKAGE , projectObject.getProjectName()))+";\n");
+            writer.write("import " + completeClassPath("*", getConstant(REPO_PACKAGE, projectObject.getProjectName())) +";\n");
+            writer.write("import " + completeClassPath("*", getConstant(REQUEST_PACKAGE, projectObject.getProjectName())) +";\n");
+            writer.write("import " + completeClassPath("*", getConstant(RESPONSE_PACKAGE, projectObject.getProjectName())) +";\n");
 
             writer.write("@RequiredArgsConstructor\n");
             writer.write("@Slf4j\n");
@@ -265,11 +265,11 @@ public class GeneratorV2 {
             writer.write("public class GlobalService {\n\n");
 
             // inicio do loop para criar as injecoes de depdendencia
-            for(TableObject tableObject : tableObjectList){
+            for(TableObject tableObject : projectObject.getTableObjectList()){
                 writer.write("\tprivate final " + tableObject.getRepo().getName() + " " + firstCharLowerCase(tableObject.getRepo().getName()) + ";\n\n");
             }
 
-            for(TableObject tableObject : tableObjectList) {
+            for(TableObject tableObject : projectObject.getTableObjectList()) {
                 writer.write("\tpublic void save(" + tableObject.getRequest().getName() + " " + firstCharLowerCase(tableObject.getRequest().getName()/*requestName*/) + ") {\n");
                 writer.write("\t\t" + firstCharLowerCase(tableObject.getRepo().getName()/*repoName*/) + ".save(" + firstCharLowerCase(tableObject.getRequest().getName()) + ".convertToEntity());\n");
                 writer.write("\t}\n\n");
@@ -281,16 +281,16 @@ public class GeneratorV2 {
         }
     }
 
-    public static void createController(List<TableObject> tableObjectList, String projectName){
-        Path targetPath = Paths.get(getConstant(CONTROLLER_PATH, projectName) + "GlobalController" + FILE_TYPE );
+    public static void createController(ProjectObject projectObject){
+        Path targetPath = Paths.get(getConstant(CONTROLLER_PATH, projectObject.getProjectName()) + "GlobalController" + FILE_TYPE );
 
         try (BufferedWriter writer = Files.newBufferedWriter(targetPath, StandardCharsets.UTF_8)) {
-            writer.write(getConstant(CONTROLLER_PACKAGE, projectName) + "\n\n\n");
+            writer.write(getConstant(CONTROLLER_PACKAGE, projectObject.getProjectName()) + "\n\n\n");
 
-            writer.write("import " + completeClassPath("*", getConstant(REQUEST_PACKAGE, projectName))+";\n");
-            writer.write("import " + completeClassPath("*", getConstant(RESPONSE_PACKAGE, projectName)) +";\n");
-            writer.write("import " + completeClassPath("*", getConstant(SERVICE_PACKAGE, projectName)) +";\n");
-            writer.write("import " + completeClassPath("TokenProvider", getConstant(TOKEN_PROVIDER_PACKAGE, projectName)) +";\n");
+            writer.write("import " + completeClassPath("*", getConstant(REQUEST_PACKAGE, projectObject.getProjectName()))+";\n");
+            writer.write("import " + completeClassPath("*", getConstant(RESPONSE_PACKAGE, projectObject.getProjectName())) +";\n");
+            writer.write("import " + completeClassPath("*", getConstant(SERVICE_PACKAGE, projectObject.getProjectName())) +";\n");
+            writer.write("import " + completeClassPath("TokenProvider", getConstant(TOKEN_PROVIDER_PACKAGE, projectObject.getProjectName())) +";\n");
 
 
             writer.write("import org.springframework.http.ResponseEntity;\n");
@@ -319,7 +319,7 @@ public class GeneratorV2 {
 
             writer.write("\tprivate final GlobalService globalService;\n\n");
 
-            for(TableObject tableObject : tableObjectList){
+            for(TableObject tableObject : projectObject.getTableObjectList()){
                 writer.write("\t@PostMapping(path = " + '"' + fromPluralToSingular(firstCharLowerCase(tableObject.getEntity().getName())) + '"' + ")\n");
                 writer.write("\tpublic void save(@Valid @RequestBody " + tableObject.getRequest().getName() + " " + firstCharLowerCase(tableObject.getRequest().getName()) + "){\n");
                 writer.write("\t\tglobalService.save(" + firstCharLowerCase(tableObject.getRequest().getName()) +");\n");
@@ -380,8 +380,10 @@ public class GeneratorV2 {
                 .trim() + "." + className;
     }
 
-    public static List<TableObject> convertSqlTableToClass(String completeFilePath){
+    public static ProjectObject convertSqlTableToClass(String completeFilePath){
         Path filePath = Paths.get(completeFilePath);
+
+        ProjectObject projectObject = new ProjectObject();
         List<TableObject> tableObjectList = new ArrayList<>();
         try (BufferedReader reader =
                      Files.newBufferedReader(filePath, StandardCharsets.UTF_8)) {
@@ -401,11 +403,36 @@ public class GeneratorV2 {
 
                 // primeira linha deve conter nome do projeto, nome do db, user, senha e host
                 if(line.contains("project")){
-                    tableObject.setProjectName(line.replace("project", ""));
+                    String projectValues[] = line.replace("project", "").trim().split(",");
+
+                    projectObject.setProjectName(projectValues[0]);
+                    projectObject.setDbName(projectValues[1]);
+                    projectObject.setUser(projectValues[2]);
+                    projectObject.setPw(projectValues[3]);
+                    projectObject.setDbHost(projectValues[4]);
+                    projectObject.setDbType(projectValues[5]);
+                    continue;
+                }
+
+                if(line.contains("token")){
+                    String projectValues[] = line.replace("token", "").trim().split(",");
+
+                    projectObject.setTokenTime(projectValues[0]);
+                    projectObject.setTokenExpTime(projectValues[1]);
+                    projectObject.setTokenKey(projectValues[2]);
                     continue;
                 }
 
                 if(line.contains("redis")){
+                    String projectValues[] = line.replace("redis", "").trim().split(",");
+
+                    projectObject.setRedisHost(projectValues[0]);
+                    projectObject.setRedisPort(projectValues[1]);
+                    projectObject.setRedisTimeOut(projectValues[2]);
+                    projectObject.setMaxIdle(projectValues[3]);
+                    projectObject.setMinIdle(projectValues[4]);
+                    projectObject.setMaxActive(projectValues[5]);
+                    projectObject.setMaxWait(projectValues[6]);
                     continue;
                 }
 
@@ -416,7 +443,7 @@ public class GeneratorV2 {
 
                     String entityName = convertTableFieldToClassField(tableName, true);
                     String entityClass = entityName + FILE_TYPE;
-                    entity.setCompleteFilePath(getConstant(ENTITY_PATH, tableObject.getProjectName()) + entityClass);
+                    entity.setCompleteFilePath(getConstant(ENTITY_PATH, projectObject.getProjectName()) + entityClass);
                     entity.setName(entityName);
                     entity.setFileName(entityClass);
 
@@ -429,12 +456,12 @@ public class GeneratorV2 {
                         // Request
                         String requestName = fromPluralToSingular(entity.getName()) + "Request";
                         String requestClass = requestName + FILE_TYPE;
-                        tableObject.setRequest(new Request(requestName, requestClass, getConstant(REQUEST_PATH, tableObject.getProjectName()) + requestClass, entity.getCompleteFilePath()));
+                        tableObject.setRequest(new Request(requestName, requestClass, getConstant(REQUEST_PATH, projectObject.getProjectName()) + requestClass, entity.getCompleteFilePath()));
 
                         // Repo
                         String repoName = entity.getName() + "Repository";
                         String repoClass = repoName + FILE_TYPE;
-                        tableObject.setRepo(new Repo(repoName, repoClass, getConstant(REPO_PATH , tableObject.getProjectName())+ repoClass));
+                        tableObject.setRepo(new Repo(repoName, repoClass, getConstant(REPO_PATH , projectObject.getProjectName())+ repoClass));
 
                         tableObjectList.add(tableObject);
 
@@ -461,7 +488,8 @@ public class GeneratorV2 {
             System.out.println(e.getStackTrace());
         }
 
-        return tableObjectList;
+        projectObject.setTableObjectList(tableObjectList);
+        return projectObject;
     }
 
 
@@ -526,7 +554,6 @@ public class GeneratorV2 {
         }catch (Exception e){
 
         }
-
     }
 
     public static void renameFolder(){
