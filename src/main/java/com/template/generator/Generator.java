@@ -197,7 +197,7 @@ public class Generator {
                      Files.newBufferedWriter(newFilePath, StandardCharsets.UTF_8)) {
 
             writer.write(getConstant(REPO_PACKAGE, projectName) + "\n\n\n");
-            writer.write("import " + completeClassPath("entity.getName()", getConstant(ENTITY_PACKAGE, projectName)) + ";\n");
+            writer.write("import " + completeClassPath(entity.getName(), getConstant(ENTITY_PACKAGE, projectName)) + ";\n");
             writer.write("import org.springframework.data.jpa.repository.JpaRepository;\n");
             writer.write("import org.springframework.stereotype.Repository;\n\n");
 
@@ -402,7 +402,6 @@ public class Generator {
                     }
                 }
             });
-            //Files.move(source, source.resolveSibling(projectObject.getProjectName()));
         } catch (Exception e) {
             System.out.println("Error - renameFolder");
         }
