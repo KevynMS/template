@@ -1,0 +1,9 @@
+FROM adoptopenjdk:11-jdk AS builder
+
+COPY apiv2/ .
+
+RUN ./gradlew build --no-daemon
+
+WORKDIR /build/libs
+
+ENTRYPOINT ["java","-jar","flakkee-verhuizers.jar"]
