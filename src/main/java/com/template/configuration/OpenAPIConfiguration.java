@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 )
 @Configuration
 public class OpenAPIConfiguration {
-
     @Bean
     public OpenApiCustomiser ordering() {
         // Fix problem of sorting and duplication of tags in output yaml file

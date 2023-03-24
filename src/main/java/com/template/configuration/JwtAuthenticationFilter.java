@@ -19,12 +19,10 @@ import java.io.IOException;
 
 import static com.template.configuration.Constants.*;
 
-
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserDetailsService userDetailsService;
-
     @Autowired
     private TokenProvider jwtTokenUtil;
 
@@ -59,9 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.warn("Bearer prefix not found, header will be ignored");
         }
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
             if (jwtTokenUtil.validateToken(authToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authentication = jwtTokenUtil.getAuthentication(authToken, SecurityContextHolder.getContext().getAuthentication(), userDetails);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
@@ -80,6 +76,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 null, null, null);
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         request.setAttribute("claims", ex.getClaims());
-
     }
 }

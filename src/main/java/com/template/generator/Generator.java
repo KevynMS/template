@@ -364,7 +364,7 @@ public class Generator {
                                 .replace("REDISMINIDLE", projectObject.getMinIdle())
                                 .replace("REDISMAXACTIVE", projectObject.getMaxActive())
                                 .replace("REDISMAXWAIT", projectObject.getMaxWait())
-                                );
+                                + "\n");
             }
 
         }catch (Exception e){

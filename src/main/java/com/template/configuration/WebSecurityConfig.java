@@ -22,12 +22,9 @@ import javax.annotation.Resource;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
     @Resource(name = "userService")
     private UserDetailsService userDetailsService;
-
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
-
     private final BCryptPasswordEncoder bcryptEncoder;
 
     @Override
@@ -59,5 +56,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
     }
-
 }

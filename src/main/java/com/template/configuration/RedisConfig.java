@@ -12,7 +12,6 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 @Configuration
 public class RedisConfig {
-
     @Value("${spring.redis.host}")
     private String host;
 
@@ -24,19 +23,14 @@ public class RedisConfig {
 
     @Value("${spring.redis.timeout}")
     private int timeout;
-
     @Value("${spring.redis.jedis.pool.max-active}")
     private int maxActive;
-
     @Value("${spring.redis.jedis.pool.max-idle}")
     private int maxIdle;
-
     @Value("${spring.redis.jedis.pool.min-idle}")
     private int minIdle;
-
     @Value("${spring.redis.jedis.pool.max-wait}")
     private long maxWaitMillis;
-
 
     @Bean
     public JedisPool jedisPool() {
