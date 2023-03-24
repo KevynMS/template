@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@Tag(name = "Flakkee Verhuizers")
+@Tag(name = "template")
 @RequestMapping(path = "/")
 @Validated
 @RequiredArgsConstructor

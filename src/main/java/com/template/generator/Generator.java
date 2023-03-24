@@ -556,7 +556,7 @@ public class Generator {
     }
 
     public static void renameFolder(){
-        Path source = Paths.get("src/main/java/com/flakkeeverhuizers/departamento");
+        Path source = Paths.get("src/main/java/com/template/departamento");
         try {
             // verifica se e diretorio
             System.out.println(Files.isDirectory(source));
