@@ -3,7 +3,7 @@ package com.template.generator;
 
 public class Constants {
 
-    private static String DEFAULT_PROJECT_NAME = "template"; //
+    public static String DEFAULT_PROJECT_NAME = "template"; //
 
     public static String CONFIG_FILE = "src/main/java/com/template/generator/config_project.txt";
 
@@ -16,6 +16,8 @@ public class Constants {
     public static String CONTROLLER_PATH = "src/main/java/com/template/controller/";
 
     public static String TOKEN_PROVIDER_PATH = "src/main/java/com/template/configuration/";
+
+    public static String RESOURCE = "src/main/resources/";
 
     public static String ENTITY_PACKAGE = "package com.template.db.entity;";
     public static String REPO_PACKAGE = "package com.template.db.repository;";

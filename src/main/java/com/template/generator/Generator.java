@@ -15,10 +15,13 @@ public class Generator {
 
 
     public static void main(String[] args) {
-        //teste();
+
         // ler sql e popular um objeto de conversao  - casa tabla sera mapeado para um objeto - cada objeto vai ser a lista de atributos e nome da tabela - os objetos seram salvos em uma lista
         // varrer essa lista aqui e realizar os processos para cada class
         ProjectObject projectObject = convertSqlTableToClass(CONFIG_FILE);
+
+        changeProject(projectObject);
+
 
         // Replace dos nomes pelo nome da aplicacao
 
@@ -335,6 +338,58 @@ public class Generator {
     }
 
 
+    public static void changeProject(ProjectObject projectObject){
+        changeFiles(projectObject, Paths.get("Dockerfile.api"));
+        changeFiles(projectObject, Paths.get("README.md"));
+        changeFiles(projectObject, Paths.get("settings.gradle"));
+
+        changeProperties(projectObject, Paths.get(RESOURCE + "application.properties"));
+        changeProperties(projectObject, Paths.get(RESOURCE + "application-dev.properties"));
+    }
+
+    public static void changeProperties(ProjectObject projectObject, Path source){
+        List<String> lines = fromFileToList(source);
+        try (BufferedWriter writer = Files.newBufferedWriter(source, StandardCharsets.UTF_8)){
+            for(String lineString : lines){
+                writer.write(
+                        lineString
+                                .replace(DEFAULT_PROJECT_NAME, projectObject.getProjectName())
+                                .replace("DBHOST", projectObject.getDbHost())
+                                .replace("DBNAME", projectObject.getDbName())
+                                .replace("DBTYPE", projectObject.getDbType())
+                                .replace("REDISHOST", projectObject.getRedisHost())
+                                .replace("REDISPORT", projectObject.getRedisPort())
+                                .replace("REDISTIMEOUT", projectObject.getRedisTimeOut())
+                                .replace("REDISMAXIDLE", projectObject.getMaxIdle())
+                                .replace("REDISMINIDLE", projectObject.getMinIdle())
+                                .replace("REDISMAXACTIVE", projectObject.getMaxActive())
+                                .replace("REDISMAXWAIT", projectObject.getMaxWait())
+                                );
+            }
+
+        }catch (Exception e){
+            System.out.println("Error - properties");
+        }
+    }
+
+    public static void changeFiles(ProjectObject projectObject, Path source){
+        List<String> lines = fromFileToList(source);
+
+        try (BufferedWriter writer = Files.newBufferedWriter(source, StandardCharsets.UTF_8)){
+            for(String lineString : lines){
+                writer.write(lineString.replace(DEFAULT_PROJECT_NAME, projectObject.getProjectName()) + "\n");
+            }
+
+        }catch (Exception e){
+            System.out.println("Error - dockerfile");
+        }
+    }
+
+    public static void changeClasses(ProjectObject projectObject){
+
+    }
+
+
     /*************************** metodos auxiliares *******************/
 
     public static String convertTableFieldToClassField(String fieldName, Boolean toClassName) {
@@ -402,36 +457,36 @@ public class Generator {
 
                 // primeira linha deve conter nome do projeto, nome do db, user, senha e host
                 if(line.contains("project")){
-                    String projectValues[] = line.replace("project", "").trim().split(",");
+                    String projectValues[] = line.replace("project", "").split(",");
 
-                    projectObject.setProjectName(projectValues[0]);
-                    projectObject.setDbName(projectValues[1]);
-                    projectObject.setUser(projectValues[2]);
-                    projectObject.setPw(projectValues[3]);
-                    projectObject.setDbHost(projectValues[4]);
-                    projectObject.setDbType(projectValues[5]);
+                    projectObject.setProjectName(projectValues[0].trim());
+                    projectObject.setDbName(projectValues[1].trim());
+                    projectObject.setUser(projectValues[2].trim());
+                    projectObject.setPw(projectValues[3].trim());
+                    projectObject.setDbHost(projectValues[4].trim());
+                    projectObject.setDbType(projectValues[5].trim());
                     continue;
                 }
 
                 if(line.contains("token")){
-                    String projectValues[] = line.replace("token", "").trim().split(",");
+                    String projectValues[] = line.replace("token", "").split(",");
 
-                    projectObject.setTokenTime(projectValues[0]);
-                    projectObject.setTokenExpTime(projectValues[1]);
-                    projectObject.setTokenKey(projectValues[2]);
+                    projectObject.setTokenTime(projectValues[0].trim());
+                    projectObject.setTokenExpTime(projectValues[1].trim());
+                    projectObject.setTokenKey(projectValues[2].trim());
                     continue;
                 }
 
                 if(line.contains("redis")){
-                    String projectValues[] = line.replace("redis", "").trim().split(",");
+                    String projectValues[] = line.replace("redis", "").split(",");
 
-                    projectObject.setRedisHost(projectValues[0]);
-                    projectObject.setRedisPort(projectValues[1]);
-                    projectObject.setRedisTimeOut(projectValues[2]);
-                    projectObject.setMaxIdle(projectValues[3]);
-                    projectObject.setMinIdle(projectValues[4]);
-                    projectObject.setMaxActive(projectValues[5]);
-                    projectObject.setMaxWait(projectValues[6]);
+                    projectObject.setRedisHost(projectValues[0].trim());
+                    projectObject.setRedisPort(projectValues[1].trim());
+                    projectObject.setRedisTimeOut(projectValues[2].trim());
+                    projectObject.setMaxIdle(projectValues[3].trim());
+                    projectObject.setMinIdle(projectValues[4].trim());
+                    projectObject.setMaxActive(projectValues[5].trim());
+                    projectObject.setMaxWait(projectValues[6].trim());
                     continue;
                 }
 
@@ -538,6 +593,29 @@ public class Generator {
 
         return originalType;
     }
+
+
+    public static List<String> fromFileToList(Path source){
+        String line;
+        List<String> lines = new ArrayList<>();
+
+        try (BufferedReader reader = Files.newBufferedReader(source, StandardCharsets.UTF_8)){
+            while ((line = reader.readLine()) != null) {
+                if(line.isEmpty()){
+                    lines.add("\n");
+                }else {
+                    lines.add(line);
+                }
+            }
+        }catch (Exception e){
+            System.out.println("Error - change file");
+        }
+        return lines;
+    }
+
+
+    /***********************/
+
 
     public static void teste(){
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
