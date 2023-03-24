@@ -17,15 +17,15 @@ import java.util.stream.Collectors;
 @Slf4j
 @OpenAPIDefinition(
         info = @Info(
-                title = "Flakkee Verhuizers",
-                description = "API of the Flakkee Verhuizers application",
+                title = "template",
+                description = "API of the template application",
                 version = "1.0"
         ),
         servers = {
                 @Server(url = "http://localhost:8080/", description = "default localhost-8080")
         },
         tags = {
-                @Tag(name = "Flakkee Verhuizers", description = "Flakkee Verhuizers controller")
+                @Tag(name = "template", description = "template controller")
         }
 )
 @Configuration

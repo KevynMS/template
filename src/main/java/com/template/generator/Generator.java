@@ -18,7 +18,7 @@ public class Generator {
         //teste();
         // ler sql e popular um objeto de conversao  - casa tabla sera mapeado para um objeto - cada objeto vai ser a lista de atributos e nome da tabela - os objetos seram salvos em uma lista
         // varrer essa lista aqui e realizar os processos para cada class
-        ProjectObject projectObject = convertSqlTableToClass(SQL_FILE_PATH);
+        ProjectObject projectObject = convertSqlTableToClass(CONFIG_FILE);
 
         // Replace dos nomes pelo nome da aplicacao
 
