@@ -1,5 +1,17 @@
 package com.template.generator;
 
+import com.template.configuration.TokenProvider;
+import com.template.db.entity.User;
+import com.template.service.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.validation.Valid;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -31,10 +43,10 @@ public class Generator {
         // criar interface de projection que representa o conteudo de retorno
 
         // criar service - service unica - geral
-        //createService(projectObject);
+        createService(projectObject);
 
         // criar controller - controller unica - geral
-        //createController(projectObject);
+        createController(projectObject);
 
         // criar exception
         //createException();
@@ -276,8 +288,8 @@ public class Generator {
         try (BufferedWriter writer = Files.newBufferedWriter(targetPath, StandardCharsets.UTF_8)) {
             writer.write(getConstant(CONTROLLER_PACKAGE, projectObject.getProjectName()) + "\n\n\n");
 
+            writer.write("import " + completeClassPath("*", getConstant(ENTITY_PACKAGE, projectObject.getProjectName())) + ";\n");
             writer.write("import " + completeClassPath("*", getConstant(REQUEST_PACKAGE, projectObject.getProjectName())) + ";\n");
-            writer.write("import " + completeClassPath("*", getConstant(RESPONSE_PACKAGE, projectObject.getProjectName())) + ";\n");
             writer.write("import " + completeClassPath("*", getConstant(SERVICE_PACKAGE, projectObject.getProjectName())) + ";\n");
             writer.write("import " + completeClassPath("TokenProvider", getConstant(TOKEN_PROVIDER_PACKAGE, projectObject.getProjectName())) + ";\n");
 
@@ -293,6 +305,8 @@ public class Generator {
             writer.write("import lombok.RequiredArgsConstructor;\n");
             writer.write("import lombok.extern.slf4j.Slf4j;\n");
             writer.write("import org.springframework.validation.annotation.Validated;\n");
+            writer.write("import java.util.HashMap;\n");
+            writer.write("import java.util.Map;\n");
             writer.write("import javax.validation.Valid;\n\n");
 
             writer.write("@RestController\n");
@@ -303,7 +317,34 @@ public class Generator {
             writer.write("@Slf4j\n");
             writer.write("public class GlobalController {\n\n");
 
+            writer.write("\tprivate final UserService userService;\n");
+            writer.write("\tprivate final AuthenticationManager authenticationManager;\n");
+            writer.write("\tprivate final TokenProvider jwtTokenUtil;\n");
             writer.write("\tprivate final GlobalService globalService;\n\n");
+
+            writer.write("\t@PostMapping(path = " + '"' + "login" + '"' + ")\n");
+            writer.write("\tpublic ResponseEntity login(@Valid @RequestBody LoginRequest loginRequest) {\n");
+
+            writer.write("\t\tfinal Authentication authentication = authenticationManager.authenticate(\n");
+            writer.write("\t\t\tnew UsernamePasswordAuthenticationToken(\n");
+            writer.write("\t\t\t\tloginRequest.getEmail(),\n");
+            writer.write("\t\t\t\tloginRequest.getPassword()\n");
+            writer.write("\t\t\t)\n");
+            writer.write("\t\t);\n");
+            writer.write("\t\tSecurityContextHolder.getContext().setAuthentication(authentication);\n");
+            writer.write("\t\tfinal String token = jwtTokenUtil.generateToken(authentication, null);\n");
+            writer.write("\t\treturn ResponseEntity.ok(successLoginResponse(loginRequest.getEmail(), token));\n");
+            writer.write("\t}\n\n");
+
+            writer.write("\tprivate Map<String, Object> successLoginResponse(String email, String token) {\n");
+            writer.write("\t\tUser user = userService.findByEmail(email);\n");
+
+            writer.write("\t\t\tMap<String, Object> response = new HashMap<>();\n");
+            writer.write("\t\t\tresponse.put(" + '"' + "userID" + '"' + ", user.getId().toString());\n");
+            writer.write("\t\t\tresponse.put(" + '"' + "token" + '"' + ", token);\n");
+
+            writer.write("\t\treturn response;\n");
+            writer.write("\t}\n\n");
 
             for (TableObject tableObject : projectObject.getTableObjectList()) {
                 writer.write("\t@PostMapping(path = " + '"' + fromPluralToSingular(firstCharLowerCase(tableObject.getEntity().getName())) + '"' + ")\n");
