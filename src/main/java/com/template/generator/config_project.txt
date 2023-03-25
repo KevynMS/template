@@ -1,19 +1,19 @@
 ---- project name, db name, user, pw, host, db type
-project spoxx, flakkee-verhuizers, root, root, flakkee-verhuizers-mysql, mysql
+project template, flakkee-verhuizers, root, root, flakkee-verhuizers-mysql, mysql
 ---- token time, token exp time, token key
 token 2592000000, 1296000000, mostdev99901!
 ---- redis host, port, timeout, max-idle, min-idle, max-active, max-wait
 redis localhost, 6379, 60, 8, 0, 8, -1
 @@@@`departments`
-`department_id` char(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL COMMENT '(DC2Type:uuid)',
-`employees_id` char(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT '(DC2Type:uuid)',
-`name` varchar(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT '(DC2Type:uuid)',
-`buget` varchar(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT '(DC2Type:uuid)',
-`created_dt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`department_id` int
+`employees_id` int
+`name` varchar
+`buget` varchar
+`created_dt` datetime
 ****
 @@@@`employees`
-`employees_id` char(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL COMMENT '(DC2Type:uuid)',
-`name` varchar(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT '(DC2Type:uuid)',
-`cpf` longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-`created_dt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`employees_id` int
+`name` varchar
+`cpf` longtext
+`created_dt` datetime
 ****

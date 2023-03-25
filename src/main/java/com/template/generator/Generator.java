@@ -17,16 +17,16 @@ public class Generator {
         // varrer essa lista aqui e realizar os processos para cada class
         ProjectObject projectObject = convertSqlTableToClass(CONFIG_FILE);
 
-        changeProject(projectObject);
+        //changeProject(projectObject);
 
         // criar entity
-        //createEntity(projectObject);
+        createEntity(projectObject);
 
         // criar request dto a partir da entity
-        //createRequest(projectObject);
+        createRequest(projectObject);
 
         // criar repo
-        //createRepo(projectObject);
+        createRepo(projectObject);
 
         // criar interface de projection que representa o conteudo de retorno
 
@@ -57,7 +57,7 @@ public class Generator {
             writer.write("import org.hibernate.annotations.Type;\n\n");
 
             writer.write("import java.math.BigDecimal;\n");
-            writer.write("import java.time.LocalDateTime;\n");
+            writer.write("import java.time.*;\n");
             writer.write("import java.util.Set;\n");
             writer.write("import javax.persistence.*;\n");
             writer.write("import java.util.UUID;\n\n\n");
@@ -73,15 +73,20 @@ public class Generator {
             int index = 0;
             for (Attributes attribute : entity.getAttributes()) {
                 if (index == 0) {
-                    String type = '"' + "uuid-char" + '"';
-                    String generator = '"' + "uuid2" + '"';
-                    String columIDType = '"' + "char(36)" + '"';
+                    // TODO testar a pra ver ser funciona com id String
+                    if(attribute.getFieldTypeInClass().equals("UUID")){
+                        String type = '"' + "uuid-char" + '"';
+                        String generator = '"' + "uuid2" + '"';
+                        String columIDType = '"' + "char(36)" + '"';
 
-                    writer.write("\t@Id\n");
-                    writer.write("\t@GeneratedValue(generator = " + generator + ")\n");
-                    writer.write("\t@GenericGenerator(name = " + generator + ", strategy = " + generator + ")\n");
-                    writer.write("\t@Column(name = " + attribute.getFieldNameInTable() + ", updatable = false, nullable = false, columnDefinition = " + columIDType + ")\n");
-                    writer.write("\t@Type(type = " + type + ")\n");
+                        writer.write("\t@Id\n");
+                        writer.write("\t@GeneratedValue(generator = " + generator + ")\n");
+                        writer.write("\t@GenericGenerator(name = " + generator + ", strategy = " + generator + ")\n");
+                        writer.write("\t@Column(name = " + attribute.getFieldNameInTable() + ", updatable = false, nullable = false, columnDefinition = " + columIDType + ")\n");
+                        writer.write("\t@Type(type = " + type + ")\n");
+                    }else{
+                        writer.write("\t@Id\n");
+                    }
                     writer.write("\tprivate " + attribute.getFieldTypeInClass() + " " + attribute.getFieldNameInClass() + ";\n\n");
                 } else {
                     if (attribute.getCardinalityType().equals("manyToOne")) {
@@ -144,8 +149,9 @@ public class Generator {
                         writer.write("\tpublic " + entity.getName() + " convertToEntity(){\n");
                         writer.write("\t\t" + entity.getName() + " " + firstCharLowerCase(entity.getName()) + " = new " + entity.getName() + "();\n\n");
 
+                        int index = 0;
                         for (Attributes attribute : entity.getAttributes()) {
-                            if (!attribute.getFieldTypeInClass().equals("UUID")) {
+                            if (index != 0) {
                                 // se tiver cardinalidade, usar o method de conversao
                                 if (!attribute.getCardinalityType().isEmpty()) {
                                     writer.write("\t\t" + firstCharLowerCase(entity.getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
@@ -155,10 +161,11 @@ public class Generator {
                                             .replace("***", "this" + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "")) + "\n");
                                 }
                             }
+                            index++;
                         }
                         writer.write("\n");
                         writer.write("\t\treturn " + firstCharLowerCase(entity.getName()) + ";\n");
-                        writer.write("\t}\n\n");
+                        writer.write("\t}\n");
                     } else {
                         if (!line.equals("") && line.contains("private")) {
                             Boolean isNativeJavaType = false;
@@ -171,7 +178,7 @@ public class Generator {
                                 String[] partsOfLine = line.trim().split(" ");
                                 writer.write("\t" + partsOfLine[0] + " " + fromPluralToSingular(partsOfLine[1]) + "Request " + partsOfLine[2] + "\n");
                             } else {
-                                if (!line.contains("UUID")) {
+                                if (!line.contains("UUID") && !line.contains("Integer") && !line.contains("Long")) {
                                     writer.write(line + "\n");
                                 }
                             }
@@ -205,7 +212,7 @@ public class Generator {
             writer.write("import java.util.UUID;\n\n");
 
             writer.write("@Repository\n");
-            writer.write("public interface " + repo.getName() + " extends JpaRepository<" + entity.getName() + ", UUID> {\n");
+            writer.write("public interface " + repo.getName() + " extends JpaRepository<" + entity.getName() + ", " + entity.getAttributes().get(0).getFieldTypeInClass() +" > {\n");
 
             writer.write("}");
         } catch (IOException e) {
@@ -571,33 +578,66 @@ public class Generator {
     }
 
     public static String convertType(String originalType, String fieldName, int position) {
-        //se for a primeira linha do aquivo, e esperado que seja a linha com o id da tabela
-        if (position == 0) {
-            return "UUID";
-        }
         //se nao for a primeiar linha mas tem id, logo e uma linha que contem uma chave estrangeira
         if (position != 0 && fieldName.toLowerCase(Locale.ROOT).contains("id")) {
             return convertTableFieldToClassField(fieldName, true);
         }
-        if (originalType.toLowerCase(Locale.ROOT).contains("int")) {
-            if (originalType.toLowerCase(Locale.ROOT).contains("tiny")) {
+
+        List<String> convertToBoolean      = List.of("bit", "boolean");
+        List<String> convertToString       = List.of("varchar", "char", "longvarchar", "character", "text", "longtext");
+        List<String> convertToInteger      = List.of("int", "integer", "serial", "smallint");
+        List<String> convertToLong         = List.of("bigint");
+        List<String> convertToDouble       = List.of("double");
+        List<String> convertToBigDecimal   = List.of("double", "decimal", "money", "numeric");
+        List<String> convertToLocalDate    = List.of("date");
+        List<String> convertToLocalTime    = List.of("time");
+        List<String> convertToLocalDateTme = List.of("timestamp", "datetime");
+
+        for(String elem : convertToBoolean){
+            if(originalType.toLowerCase(Locale.ROOT).equals(elem))
                 return "Boolean";
-            }
-            return "int";
         }
-        if (originalType.toLowerCase(Locale.ROOT).contains("varchar") ||
-                originalType.toLowerCase(Locale.ROOT).contains("text")) {
-            return "String";
+
+        for(String elem : convertToString){
+            if(originalType.toLowerCase(Locale.ROOT).equals(elem))
+                return "String";
         }
-        if (originalType.toLowerCase(Locale.ROOT).contains("datetime")) {
-            return "LocalDateTime";
+
+        for(String elem : convertToInteger){
+            if(originalType.toLowerCase(Locale.ROOT).equals(elem))
+                return "Integer";
         }
-        if (originalType.toLowerCase(Locale.ROOT).contains("decimal")) {
-            return "BigDecimal";
+
+        for(String elem : convertToLong){
+            if(originalType.toLowerCase(Locale.ROOT).equals(elem))
+                return "Long";
         }
-        if (originalType.toLowerCase(Locale.ROOT).contains("double")) {
-            return "double";
+
+        for(String elem : convertToDouble){
+            if(originalType.toLowerCase(Locale.ROOT).equals(elem))
+                return "Double";
         }
+
+        for(String elem : convertToBigDecimal){
+            if(originalType.toLowerCase(Locale.ROOT).equals(elem))
+                return "BigDecimal";
+        }
+
+        for(String elem : convertToLocalDate){
+            if(originalType.toLowerCase(Locale.ROOT).equals(elem))
+                return "LocalDate";
+        }
+
+        for(String elem : convertToLocalTime){
+            if(originalType.toLowerCase(Locale.ROOT).equals(elem))
+                return "LocalTime";
+        }
+
+        for(String elem : convertToLocalDateTme){
+            if(originalType.toLowerCase(Locale.ROOT).equals(elem))
+                return "LocalDateTime";
+        }
+
         return originalType;
     }
 
