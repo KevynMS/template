@@ -53,8 +53,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
+	// TODO addicionar as depedencias de bd como param tambem
 	// MySQL
 	implementation 'mysql:mysql-connector-java:8.0.28'
+
+	// Postgresql
+	implementation 'org.postgresql:postgresql:42.5.4'
 
 	// Redis
 	implementation 'redis.clients:jedis:3.6.1'

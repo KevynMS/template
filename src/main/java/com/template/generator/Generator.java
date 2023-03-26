@@ -1,17 +1,5 @@
 package com.template.generator;
 
-import com.template.configuration.TokenProvider;
-import com.template.db.entity.User;
-import com.template.service.UserService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import javax.validation.Valid;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -85,7 +73,6 @@ public class Generator {
             int index = 0;
             for (Attributes attribute : entity.getAttributes()) {
                 if (index == 0) {
-                    // TODO testar a pra ver ser funciona com id String
                     if(attribute.getFieldTypeInClass().equals("UUID")){
                         String type = '"' + "uuid-char" + '"';
                         String generator = '"' + "uuid2" + '"';
@@ -98,6 +85,7 @@ public class Generator {
                         writer.write("\t@Type(type = " + type + ")\n");
                     }else{
                         writer.write("\t@Id\n");
+                        writer.write("\t@GeneratedValue(strategy = GenerationType.IDENTITY)\n");
                     }
                     writer.write("\tprivate " + attribute.getFieldTypeInClass() + " " + attribute.getFieldNameInClass() + ";\n\n");
                 } else {
@@ -169,8 +157,14 @@ public class Generator {
                                     writer.write("\t\t" + firstCharLowerCase(entity.getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
                                             .replace("***", "this" + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "") + ".convertToEntity()") + "\n");
                                 } else {
-                                    writer.write("\t\t" + firstCharLowerCase(entity.getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
-                                            .replace("***", "this" + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "")) + "\n");
+                                    if(isCreatedOrUpdateDateControlField(attribute.getFieldNameInClass())) {
+                                        writer.write("\t\t" + firstCharLowerCase(entity.getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
+                                                .replace("***", attribute.getFieldTypeInClass() + ".now()") + "\n");
+                                    }else {
+                                        writer.write("\t\t" + firstCharLowerCase(entity.getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
+                                                .replace("***", "this" + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "")) + "\n");
+
+                                    }
                                 }
                             }
                             index++;
@@ -190,7 +184,7 @@ public class Generator {
                                 String[] partsOfLine = line.trim().split(" ");
                                 writer.write("\t" + partsOfLine[0] + " " + fromPluralToSingular(partsOfLine[1]) + "Request " + partsOfLine[2] + "\n");
                             } else {
-                                if (!line.contains("UUID") && !line.contains("Integer") && !line.contains("Long")) {
+                                if (!line.contains("UUID") && !line.contains("Integer") && !line.contains("Long") && !isCreatedOrUpdateDateControlField(line)) {
                                     writer.write(line + "\n");
                                 }
                             }
@@ -392,6 +386,9 @@ public class Generator {
                                 .replace("REDISMINIDLE", projectObject.getMinIdle())
                                 .replace("REDISMAXACTIVE", projectObject.getMaxActive())
                                 .replace("REDISMAXWAIT", projectObject.getMaxWait())
+                                .replace("TOKENTIME" , projectObject.getTokenTime())
+                                .replace("TOKENREFRESHTIME", projectObject.getTokenRefreshTime())
+                                .replace("TOKENKEY", projectObject.getTokenKey())
                                 + "\n");
             }
 
@@ -541,7 +538,7 @@ public class Generator {
                     String projectValues[] = line.replace("token", "").split(",");
 
                     projectObject.setTokenTime(projectValues[0].trim());
-                    projectObject.setTokenExpTime(projectValues[1].trim());
+                    projectObject.setTokenRefreshTime(projectValues[1].trim());
                     projectObject.setTokenKey(projectValues[2].trim());
                     continue;
                 }
@@ -697,5 +694,15 @@ public class Generator {
             System.out.println("Error - change file");
         }
         return lines;
+    }
+
+    public static Boolean isCreatedOrUpdateDateControlField(String line){
+        List<String> dateTypes =
+                List.of("createdat", "updatedat", "createddt", "updateddt");
+        for(String type : dateTypes){
+            if(line.toLowerCase().contains(type))
+                return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 }

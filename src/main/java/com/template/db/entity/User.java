@@ -8,8 +8,12 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+
+
+// This is a generic user class, so please adapt this class to your specific project
+
 @Entity
-@Table(name = "gvs_im_user")
+@Table(name = "user")
 @Data
 public class User {
 
@@ -37,5 +41,15 @@ public class User {
 
     @Column(name = "superAdmin")
     private Boolean superAdmin;
+
+    public Boolean isAdmin(){
+        // Change this method to return if the user is admin or not
+        // by default it is using the super admin field, bt you can change to any field for the specific project
+
+        if(this.superAdmin != null && this.superAdmin){
+            return Boolean.TRUE;
+        }
+        return  Boolean.FALSE;
+    }
 
 }

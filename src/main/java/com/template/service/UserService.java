@@ -60,7 +60,7 @@ public class UserService implements UserDetailsService {
 
 	private Set<SimpleGrantedAuthority> getAuthority(User user) {
 		Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-		if (user.getSuperAdmin()) {
+		if (user.isAdmin()) {
 			authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 		} else {
 			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));

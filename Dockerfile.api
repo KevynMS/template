@@ -2,4 +2,4 @@ FROM adoptopenjdk:11-jdk AS builder
 COPY apiv2/ .
 RUN ./gradlew build --no-daemon
 WORKDIR /build/libs
-ENTRYPOINT ["java","-jar","spoxx.jar"]
+ENTRYPOINT ["java","-jar","template.jar"]

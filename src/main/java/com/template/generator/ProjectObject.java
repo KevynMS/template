@@ -21,7 +21,7 @@ public class ProjectObject {
     private String dbDriverClass;
 
     private String tokenTime;
-    private String tokenExpTime;
+    private String tokenRefreshTime;
     private String tokenKey;
 
     private String redisHost;

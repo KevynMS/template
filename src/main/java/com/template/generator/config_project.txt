@@ -1,19 +1,12 @@
 ---- project name, db name, user, pw, host, db type
 project template, flakkee-verhuizers, root, root, flakkee-verhuizers-mysql, mysql
----- token time, token exp time, token key
+---- token time, token refresh time, token key
 token 2592000000, 1296000000, mostdev99901!
 ---- redis host, port, timeout, max-idle, min-idle, max-active, max-wait
 redis localhost, 6379, 60, 8, 0, 8, -1
 @@@@`departments`
-`department_id` int
-`employees_id` int
+`department_id` UUID
 `name` varchar
 `buget` varchar
-`created_dt` datetime
-****
-@@@@`employees`
-`employees_id` int
-`name` varchar
-`cpf` longtext
 `created_dt` datetime
 ****
