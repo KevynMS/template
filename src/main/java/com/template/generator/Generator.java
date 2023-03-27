@@ -15,7 +15,7 @@ public class Generator {
     public static void main(String[] args) {
         // ler sql e popular um objeto de conversao  - casa tabla sera mapeado para um objeto - cada objeto vai ser a lista de atributos e nome da tabela - os objetos seram salvos em uma lista
         // varrer essa lista aqui e realizar os processos para cada class
-        ProjectObject projectObject = convertSqlTableToClass(CONFIG_FILE);
+        ProjectObject projectObject = convertConfigFileToProjectObject(CONFIG_FILE);
 
         //changeProject(projectObject);
 
@@ -163,7 +163,6 @@ public class Generator {
                                     }else {
                                         writer.write("\t\t" + firstCharLowerCase(entity.getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
                                                 .replace("***", "this" + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "")) + "\n");
-
                                     }
                                 }
                             }
@@ -377,6 +376,7 @@ public class Generator {
                                 .replace("DBPW", projectObject.getDbPw())
                                 .replace("DBNAME", projectObject.getDbName())
                                 .replace("DBTYPE", projectObject.getDbType())
+                                .replace("DBPORT", projectObject.getDbPort())
                                 .replace("DBDRIVER", projectObject.getDbDriverClass())
                                 .replace("DBPLATFORM", projectObject.getDbPlatform())
                                 .replace("REDISHOST", projectObject.getRedisHost())
@@ -495,7 +495,7 @@ public class Generator {
                 .trim() + "." + className;
     }
 
-    public static ProjectObject convertSqlTableToClass(String completeFilePath) {
+    public static ProjectObject convertConfigFileToProjectObject(String completeFilePath) {
         Path filePath = Paths.get(completeFilePath);
         ProjectObject projectObject = new ProjectObject();
         List<TableObject> tableObjectList = new ArrayList<>();
@@ -522,6 +522,7 @@ public class Generator {
                     projectObject.setDbPw(projectValues[3].trim());
                     projectObject.setDbHost(projectValues[4].trim());
                     projectObject.setDbType(projectValues[5].trim());
+                    projectObject.setDbPort(projectValues[6].trim());
 
                     // todo create e enum for that
                     if (projectObject.getDbType().equals("mysql")) {

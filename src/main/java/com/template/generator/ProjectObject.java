@@ -17,6 +17,7 @@ public class ProjectObject {
     private String dbPw;
     private String dbHost;
     private String dbType;
+    private String dbPort;
     private String dbPlatform;
     private String dbDriverClass;
 

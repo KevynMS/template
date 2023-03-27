@@ -1,5 +1,5 @@
----- project name, db name, user, pw, host, db type
-project template, flakkee-verhuizers, root, root, flakkee-verhuizers-mysql, mysql
+---- project name, db name, user, pw, host, db type, db port
+project template, template, root, root, template, postgresql, 5432
 ---- token time, token refresh time, token key
 token 2592000000, 1296000000, mostdev99901!
 ---- redis host, port, timeout, max-idle, min-idle, max-active, max-wait
