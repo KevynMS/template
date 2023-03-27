@@ -95,7 +95,7 @@ public class Generator {
                         writer.write("\tprivate " + attribute.getFieldTypeInClass() + " " + attribute.getFieldNameInClass() + ";\n\n");
                     } else if (attribute.getCardinalityType().equals("manyToMany")) {
 
-                    } else if (attribute.getCardinalityType().equals("oneToOne")) {
+                    } else if (attribute.getCardinalityType().equals("OneToMany")) {
                         // TODO pensar numa maneira de pegar o nome do campo na classe que contem a parte manyToOne
                         writer.write("\t@OneToMany(fetch = FetchType.LAZY, mappedBy = <nome_do_campo>>)\n");
                         writer.write("\tprivate Set<" + attribute.getFieldTypeInClass() + ">" + " " + attribute.getFieldNameInClass() + ";\n");
@@ -590,11 +590,13 @@ public class Generator {
                         position = 0;
                     } else {
                         Attributes attribute = new Attributes();
-                        String filedName = partsOfLine[0].replace("`", "").trim();
+                        String filedName = partsOfLine[0].replace("`", "").replace("\"", "").trim();
                         attribute.setFieldNameInTable('"' + filedName + '"');
                         attribute.setFieldNameInClass(convertTableFieldToClassField(filedName, false));
                         attribute.setFieldTypeInClass(convertType(partsOfLine[1], filedName, position));
                         attribute.setCardinalityType(position != 0 && filedName.contains("_id") ? "manyToOne" : "");
+
+                        // se posicao 0
 
                         attributes.add(attribute);
                         position++;
