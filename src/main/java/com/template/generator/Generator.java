@@ -113,6 +113,18 @@ public class Generator {
         }
     }
 
+    public static void createRequestV2(){
+        // if
+
+
+        // if simple_key - nao add o primeiro atributo (id)
+        // if for composto, criar request para a entity e a entity_key
+    }
+
+    public static void createRepoV2(){
+
+    }
+
     public static void createRequest(ProjectObject projectObject) {
         projectObject.getTableObjectList().forEach(tableObject -> createRequest(tableObject.getRequest(), tableObject.getEntity(), projectObject.getProjectName()));
     }
@@ -266,6 +278,8 @@ public class Generator {
                 writer.write("\tprivate final " + tableObject.getRepo().getName() + " " + firstCharLowerCase(tableObject.getRepo().getName()) + ";\n\n");
             }
             for (TableObject tableObject : projectObject.getTableObjectList()) {
+
+                // se
                 writer.write("\tpublic void save(" + tableObject.getRequest().getName() + " " + firstCharLowerCase(tableObject.getRequest().getName()/*requestName*/) + ") {\n");
                 writer.write("\t\t" + firstCharLowerCase(tableObject.getRepo().getName()/*repoName*/) + ".save(" + firstCharLowerCase(tableObject.getRequest().getName()) + ".convertToEntity());\n");
                 writer.write("\t}\n\n");
@@ -391,7 +405,6 @@ public class Generator {
                                 .replace("TOKENKEY", projectObject.getTokenKey())
                                 + "\n");
             }
-
         } catch (Exception e) {
             System.out.println("Error - properties");
         }
@@ -509,11 +522,11 @@ public class Generator {
             List<Attributes> attributes = new ArrayList<>();
             while ((line = reader.readLine()) != null) {
                 String[] partsOfLine = line.split(" ");
-                if (line.contains("----")) {
+                if (line.startsWith("----")) {
                     continue;
                 }
                 // primeira linha deve conter nome do projeto, nome do db, user, senha e host
-                if (line.contains("project")) {
+                if (line.startsWith("project")) {
                     String projectValues[] = line.replace("project", "").split(",");
 
                     projectObject.setProjectName(projectValues[0].trim());
@@ -535,7 +548,7 @@ public class Generator {
                     }
                     continue;
                 }
-                if (line.contains("token")) {
+                if (line.startsWith("token")) {
                     String projectValues[] = line.replace("token", "").split(",");
 
                     projectObject.setTokenTime(projectValues[0].trim());
@@ -543,7 +556,7 @@ public class Generator {
                     projectObject.setTokenKey(projectValues[2].trim());
                     continue;
                 }
-                if (line.contains("redis")) {
+                if (line.startsWith("redis")) {
                     String projectValues[] = line.replace("redis", "").split(",");
 
                     projectObject.setRedisHost(projectValues[0].trim());
@@ -555,18 +568,20 @@ public class Generator {
                     projectObject.setMaxWait(projectValues[6].trim());
                     continue;
                 }
-                if (line.contains("@@@@")) {
-                    String tableName = partsOfLine[0].replace("`", "").replace("@@@@", "").trim();
-                    entity.setTableName(tableName);
-                    entity.setTableNameWithQuotationMarks('"' + tableName + '"');
+                if (line.startsWith("@@@@")) {
+                    String tableValues[] = line.replace("@@@@", "").split(",");
+                    entity.setTableName(tableValues[0].trim());
+                    tableObject.setTypeOfPK(tableValues[1].trim());
+                    tableObject.setTypeOfFK(tableValues[2].trim());
+                    entity.setTableNameWithQuotationMarks('"' + entity.getTableName() + '"');
 
-                    String entityName = convertTableFieldToClassField(tableName, true);
+                    String entityName = convertTableFieldToClassField(tableValues[0], true);
                     String entityClass = entityName + FILE_TYPE;
                     entity.setCompleteFilePath(getConstant(ENTITY_PATH, projectObject.getProjectName()) + entityClass);
                     entity.setName(entityName);
                     entity.setFileName(entityClass);
                 } else {
-                    if (line.contains("****")) {
+                    if (line.startsWith("****")) {
                         // Entity
                         entity.setAttributes(attributes);
                         tableObject.setEntity(entity);
@@ -593,6 +608,7 @@ public class Generator {
                         String filedName = partsOfLine[0].replace("`", "").replace("\"", "").trim();
                         attribute.setFieldNameInTable('"' + filedName + '"');
                         attribute.setFieldNameInClass(convertTableFieldToClassField(filedName, false));
+                        attribute.setFieldTypeInTable(convertType(partsOfLine[1], filedName.replace("_id", ""), position));
                         attribute.setFieldTypeInClass(convertType(partsOfLine[1], filedName, position));
                         attribute.setCardinalityType(position != 0 && filedName.contains("_id") ? "manyToOne" : "");
 
@@ -620,7 +636,7 @@ public class Generator {
 
     public static String convertType(String originalType, String fieldName, int position) {
         //se nao for a primeiar linha mas tem id, logo e uma linha que contem uma chave estrangeira
-        if (position != 0 && fieldName.toLowerCase(Locale.ROOT).contains("id")) {
+        if (position != 0 && fieldName.toLowerCase(Locale.ROOT).contains("_id")) {
             return convertTableFieldToClassField(fieldName, true);
         }
 

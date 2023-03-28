@@ -4,9 +4,13 @@ project template, template, root, root, template, postgresql, 5432
 token 2592000000, 1296000000, mostdev99901!
 ---- redis host, port, timeout, max-idle, min-idle, max-active, max-wait
 redis localhost, 6379, 60, 8, 0, 8, -1
-@@@@`SimpleAds`
-created_at timestamp with time zone NOT NULL,
-updated_at timestamp with time zone NOT NULL,
-page_id integer NOT NULL,
-child_id integer NOT NULL
+---- table name, type of PK(simple_key or compose_key), type of FK(object or just_id)
+@@@@ employees, simple_key, object
+id integer
+name character
+****
+@@@@ departments, simple_key, object
+id integer
+name character
+employee_id integer
 ****
