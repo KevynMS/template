@@ -4,8 +4,8 @@ import com.template.controller.model.request.UserRequest;
 import com.template.db.entity.User;
 import com.template.db.repository.*;
 import com.template.exception.AuthenticationException;
+import com.template.exception.RecordNotFoundException;
 import com.template.exception.SignInException;
-import com.template.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -43,12 +43,12 @@ public class UserService implements UserDetailsService {
 
 	public User findByID(String userID) {
 		return userRepository.findById(UUID.fromString(userID))
-				.orElseThrow(() -> new UserNotFoundException("User not found for id: " + userID));
+				.orElseThrow(() -> new RecordNotFoundException("User not found for id: " + userID));
 	}
 
 	public User findByEmail(String email) {
 		return userRepository.findByEmail(email)
-				.orElseThrow(() -> new UserNotFoundException("User not found for email: " + email));
+				.orElseThrow(() -> new RecordNotFoundException("User not found for email: " + email));
 	}
 
 	@Override

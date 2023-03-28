@@ -113,25 +113,13 @@ public class Generator {
         }
     }
 
-    public static void createRequestV2(){
-        // if
-
-
-        // if simple_key - nao add o primeiro atributo (id)
-        // if for composto, criar request para a entity e a entity_key
-    }
-
-    public static void createRepoV2(){
-
-    }
-
     public static void createRequest(ProjectObject projectObject) {
-        projectObject.getTableObjectList().forEach(tableObject -> createRequest(tableObject.getRequest(), tableObject.getEntity(), projectObject.getProjectName()));
+        projectObject.getTableObjectList().forEach(tableObject -> createRequest(tableObject, projectObject.getProjectName()));
     }
 
-    public static void createRequest(Request request, Entity entity, String projectName) {
-        Path originPath = Paths.get(request.getCompleteEntityFilePath());
-        Path targetPath = Paths.get(request.getCompleteFilePath());
+    public static void createRequest(TableObject tableObject, String projectName) {
+        Path originPath = Paths.get(/*request*/ tableObject.getRequest().getCompleteEntityFilePath());
+        Path targetPath = Paths.get(/*request*/ tableObject.getRequest().getCompleteFilePath());
 
         try (BufferedReader reader = Files.newBufferedReader(originPath, StandardCharsets.UTF_8);
              BufferedWriter writer = Files.newBufferedWriter(targetPath, StandardCharsets.UTF_8)) {
@@ -153,36 +141,39 @@ public class Generator {
                 if (validLine) {
                     if (line.contains("package")) {
                         writer.write(getConstant(REQUEST_PACKAGE, projectName) + "\n\n");
-                        writer.write("import " + completeClassPath(entity.getName(), getConstant(ENTITY_PACKAGE, projectName)) + ";\n");
+                        writer.write("import " + completeClassPath(/*entity*/ tableObject.getEntity().getName(), getConstant(ENTITY_PACKAGE, projectName)) + ";\n");
                     } else if (line.contains("public class")) {
-                        writer.write("public class " + request.getName() + " {\n");
+                        writer.write("public class " + /*request*/tableObject.getRequest().getName() + " {\n");
                         writer.write("\n\n");
 
-                        writer.write("\tpublic " + entity.getName() + " convertToEntity(){\n");
-                        writer.write("\t\t" + entity.getName() + " " + firstCharLowerCase(entity.getName()) + " = new " + entity.getName() + "();\n\n");
 
-                        int index = 0;
-                        for (Attributes attribute : entity.getAttributes()) {
-                            if (index != 0) {
-                                // se tiver cardinalidade, usar o method de conversao
-                                if (!attribute.getCardinalityType().isEmpty()) {
-                                    writer.write("\t\t" + firstCharLowerCase(entity.getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
-                                            .replace("***", "this" + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "") + ".convertToEntity()") + "\n");
-                                } else {
-                                    if(isCreatedOrUpdateDateControlField(attribute.getFieldNameInClass())) {
-                                        writer.write("\t\t" + firstCharLowerCase(entity.getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
-                                                .replace("***", attribute.getFieldTypeInClass() + ".now()") + "\n");
-                                    }else {
-                                        writer.write("\t\t" + firstCharLowerCase(entity.getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
-                                                .replace("***", "this" + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "")) + "\n");
+                        if (tableObject.getTypeOfFK().equals("object")) {
+                            writer.write("\tpublic " + /*entity*/ tableObject.getEntity().getName() + " convertToEntity(){\n");
+                            writer.write("\t\t" + /*entity*/ tableObject.getEntity().getName() + " " + firstCharLowerCase(/*entity*/tableObject.getEntity().getName()) + " = new " + /*entity*/ tableObject.getEntity().getName() + "();\n\n");
+
+                            int index = 0;
+                            for (Attributes attribute : /*entity*/tableObject.getEntity().getAttributes()) {
+                                if (index != 0) {
+                                    // se tiver cardinalidade, usar o method de conversao
+                                    if (!attribute.getCardinalityType().isEmpty()) {
+                                        writer.write("\t\t" + firstCharLowerCase(/*entity*/tableObject.getEntity().getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
+                                                .replace("***", "this" + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "") + ".convertToEntity()") + "\n");
+                                    } else {
+                                        if (isCreatedOrUpdateDateControlField(attribute.getFieldNameInClass())) {
+                                            writer.write("\t\t" + firstCharLowerCase(/*entity*/tableObject.getEntity().getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
+                                                    .replace("***", attribute.getFieldTypeInClass() + ".now()") + "\n");
+                                        } else {
+                                            writer.write("\t\t" + firstCharLowerCase(/*entity*/tableObject.getEntity().getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
+                                                    .replace("***", "this" + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "")) + "\n");
+                                        }
                                     }
                                 }
+                                index++;
                             }
-                            index++;
+                            writer.write("\n");
+                            writer.write("\t\treturn " + firstCharLowerCase(/*entity*/tableObject.getEntity().getName()) + ";\n");
+                            writer.write("\t}\n");
                         }
-                        writer.write("\n");
-                        writer.write("\t\treturn " + firstCharLowerCase(entity.getName()) + ";\n");
-                        writer.write("\t}\n");
                     } else {
                         if (!line.equals("") && line.contains("private")) {
                             Boolean isNativeJavaType = false;
@@ -193,7 +184,16 @@ public class Generator {
                             }
                             if (!isNativeJavaType) {
                                 String[] partsOfLine = line.trim().split(" ");
-                                writer.write("\t" + partsOfLine[0] + " " + fromPluralToSingular(partsOfLine[1]) + "Request " + partsOfLine[2] + "\n");
+                                if (tableObject.getTypeOfFK().equals("object")) {
+                                    writer.write("\t" + partsOfLine[0] + " " + fromPluralToSingular(partsOfLine[1]) + "Request " + partsOfLine[2] + "\n");
+                                } else if(tableObject.getTypeOfFK().equals("just_id")) {
+                                    for(Attributes attribute : tableObject.getEntity().getAttributes()){
+                                        if(attribute.getFieldTypeInClass().equals(partsOfLine[1])){
+                                            writer.write("\t" + partsOfLine[0] + " " +  attribute.getFieldTypeInTable() + " " +  partsOfLine[2] + "\n");
+                                            break;
+                                        }
+                                    }
+                                }
                             } else {
                                 if (!line.contains("UUID") && !line.contains("Integer") && !line.contains("Long") && !isCreatedOrUpdateDateControlField(line)) {
                                     writer.write(line + "\n");
@@ -205,7 +205,6 @@ public class Generator {
                     }
                 }
             }
-
         } catch (Exception e) {
             System.out.println("Error - create request " + e.getMessage());
         }
@@ -266,7 +265,8 @@ public class Generator {
             writer.write("import java.util.List;\n");
             writer.write("import " + completeClassPath("*", getConstant(ENTITY_PACKAGE, projectObject.getProjectName())) + ";\n");
             writer.write("import " + completeClassPath("*", getConstant(REPO_PACKAGE, projectObject.getProjectName())) + ";\n");
-            writer.write("import " + completeClassPath("*", getConstant(REQUEST_PACKAGE, projectObject.getProjectName())) + ";\n\n");
+            writer.write("import " + completeClassPath("*", getConstant(REQUEST_PACKAGE, projectObject.getProjectName())) + ";\n");
+            writer.write("import " + completeClassPath("*", getConstant(EXCEPTION_PACKAGE, projectObject.getProjectName())) + ";\n\n");
 
             writer.write("@RequiredArgsConstructor\n");
             writer.write("@Slf4j\n");
@@ -277,11 +277,41 @@ public class Generator {
             for (TableObject tableObject : projectObject.getTableObjectList()) {
                 writer.write("\tprivate final " + tableObject.getRepo().getName() + " " + firstCharLowerCase(tableObject.getRepo().getName()) + ";\n\n");
             }
-            for (TableObject tableObject : projectObject.getTableObjectList()) {
 
-                // se
+
+            for (TableObject tableObject : projectObject.getTableObjectList()) {
                 writer.write("\tpublic void save(" + tableObject.getRequest().getName() + " " + firstCharLowerCase(tableObject.getRequest().getName()/*requestName*/) + ") {\n");
-                writer.write("\t\t" + firstCharLowerCase(tableObject.getRepo().getName()/*repoName*/) + ".save(" + firstCharLowerCase(tableObject.getRequest().getName()) + ".convertToEntity());\n");
+                if (tableObject.getTypeOfFK().equals("object")) {
+
+                    writer.write("\t\t" + firstCharLowerCase(tableObject.getRepo().getName()/*repoName*/) + ".save(" + firstCharLowerCase(tableObject.getRequest().getName()) + ".convertToEntity());\n");
+
+                }else if(tableObject.getTypeOfFK().equals("just_id")) {
+                    writer.write("\t\t" + tableObject.getEntity().getName() /*entityName*/ + " " + firstCharLowerCase(/*entityName*/ tableObject.getEntity().getName()) + " = new " + /*entityName*/ tableObject.getEntity().getName() + "();\n");
+
+                    int index = 0;
+                    for(Attributes attribute : tableObject.getEntity().getAttributes()){
+                        // index 0 significa que e a key, e a key so e gerada apos a criacao do registro
+                        if (index != 0) {
+                            if (!attribute.getCardinalityType().isEmpty()) {
+
+
+                                String recordNotFound =  '"' + attribute.getFieldNameInClass() + " not found" + '"';
+                                writer.write("\t\t" + firstCharLowerCase(tableObject.getEntity().getName()/*entityName*/) + setMethodFromFieldName(attribute.getFieldNameInClass())
+                                        //                    (first char minusculo) fieldName + ".findById(" +  request.getFieldName + ")" +   ".orElseThrow(() -> new RecordNotFoundException(error message)));"
+                                        .replace("***",
+                                                firstCharLowerCase(attribute.getFieldNameInClass()) + "Repository.findById(" +
+                                                firstCharLowerCase(tableObject.getRequest().getName()) + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", ""))
+                                        .replace(";", "") + ".orElseThrow(() -> new RecordNotFoundException(" + recordNotFound + ")));" + "\n");
+                            } else {
+                                writer.write("\t\t" + firstCharLowerCase(tableObject.getEntity().getName()/*entityName*/) + setMethodFromFieldName(attribute.getFieldNameInClass())
+                                        .replace("***", firstCharLowerCase(tableObject.getRequest().getName()/*requestName*/) + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "")) + "\n");
+                            }
+                        }
+                        index++;
+                    }
+
+                    writer.write("\t\t"+ firstCharLowerCase(tableObject.getRepo().getName()/*repoName*/) + ".save(" + firstCharLowerCase(tableObject.getEntity().getName()/*entityName*/) + ");\n");
+                }
                 writer.write("\t}\n\n");
             }
             writer.write("}");
@@ -490,7 +520,7 @@ public class Generator {
                 plural.substring(0, plural.length() - 1);
             }
         }
-        return plural.substring(0, plural.length() - 1);
+        return plural.endsWith("s") ? plural.substring(0, plural.length() - 1) : plural;
     }
 
     public static String firstCharUpperCase(String s) {
@@ -575,7 +605,7 @@ public class Generator {
                     tableObject.setTypeOfFK(tableValues[2].trim());
                     entity.setTableNameWithQuotationMarks('"' + entity.getTableName() + '"');
 
-                    String entityName = convertTableFieldToClassField(tableValues[0], true);
+                    String entityName = fromPluralToSingular(convertTableFieldToClassField(tableValues[0].trim(), true));
                     String entityClass = entityName + FILE_TYPE;
                     entity.setCompleteFilePath(getConstant(ENTITY_PATH, projectObject.getProjectName()) + entityClass);
                     entity.setName(entityName);
@@ -605,12 +635,12 @@ public class Generator {
                         position = 0;
                     } else {
                         Attributes attribute = new Attributes();
-                        String filedName = partsOfLine[0].replace("`", "").replace("\"", "").trim();
-                        attribute.setFieldNameInTable('"' + filedName + '"');
-                        attribute.setFieldNameInClass(convertTableFieldToClassField(filedName, false));
-                        attribute.setFieldTypeInTable(convertType(partsOfLine[1], filedName.replace("_id", ""), position));
-                        attribute.setFieldTypeInClass(convertType(partsOfLine[1], filedName, position));
-                        attribute.setCardinalityType(position != 0 && filedName.contains("_id") ? "manyToOne" : "");
+                        String fieldName = partsOfLine[0].replace("`", "").replace("\"", "").trim();
+                        attribute.setFieldNameInTable('"' + fieldName + '"');
+                        attribute.setFieldNameInClass(convertTableFieldToClassField(fieldName, false));
+                        attribute.setFieldTypeInTable(convertType(partsOfLine[1], fieldName.replace("_id", ""), position));
+                        attribute.setFieldTypeInClass(convertType(partsOfLine[1], fieldName, position));
+                        attribute.setCardinalityType(position != 0 && fieldName.contains("_id") ? "manyToOne" : "");
 
                         // se posicao 0
 
