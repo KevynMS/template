@@ -30,13 +30,11 @@ public class UserService implements UserDetailsService {
 			throw new SignInException("Email already in use");
 		}
 
+		// TODO Please adapt this method to your specific project
 		User user = new User();
 		user.setFirstName(userRequest.getFirstName());
-		user.setLastName(userRequest.getLastName());
 		user.setEmail(userRequest.getEmail());
 		user.setPassword(bcryptEncoder.encode(userRequest.getPassword()));
-		user.setCreatedAt(LocalDateTime.now());
-		user.setSuperAdmin(Boolean.TRUE);
 
 		userRepository.save(user);
 	}
@@ -59,12 +57,16 @@ public class UserService implements UserDetailsService {
 	}
 
 	private Set<SimpleGrantedAuthority> getAuthority(User user) {
-		Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-		if (user.isAdmin()) {
-			authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+		/*Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+		if (user.getAuthorityByRole()) {
+			authorities.add(user.getAuthorityByRole());
 		} else {
 			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 		}
+		return authorities;*/
+		Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+		authorities.add(user.getAuthorityByRole());
+
 		return authorities;
 	}
 }
