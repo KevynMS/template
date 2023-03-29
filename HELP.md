@@ -17,16 +17,16 @@
 
 ## Source code packages structure
 
-| Package                                   | Description                                                                           |
-|-------------------------------------------|---------------------------------------------------------------------------------------|
-| com.spoxx.*servicename*                   | Root package for all service classes                                                  | 
-| com.spoxx.*servicename*.configuration     | Spring configuration                                                                  |
-| com.spoxx.*servicename*.controller        | Rest controllers                                                                      |
-| com.spoxx.*servicename*.controller.common | Rest utility classes without service specific logic                                   |
-| com.spoxx.*servicename*.controller.model  | Data transfer objects for Rest API                                                    | 
-| com.spoxx.*servicename*.kafka             | Kafka consumers and producers                                                         | 
-| com.spoxx.*servicename*.kafka.common      | Kafka utility classes without service specific logic                                  | 
-| com.spoxx.*servicename*.kafka.mockload    | Mock implementation of consumers and producers for testing in development environment | 
-| com.spoxx.*servicename*.mongo.document    | MongoDB Documents definition                                                          |
-| com.spoxx.*servicename*.mongo.repository  | MongoDB data access classes                                                           |
-| com.spoxx.*servicename*.service           | Business logic layer which connects all other layers together                         |
+| Package                                 | Description                                                                           |
+|-----------------------------------------|---------------------------------------------------------------------------------------|
+| com.*servicename*                       | Root package for all service classes                                                  | 
+| com.*servicename*.configuration         | Spring configuration                                                                  |
+| com.*servicename*.controller            | Rest controllers                                                                      |
+| com.*servicename*.controller.common     | Rest utility classes without service specific logic                                   |
+| com.*servicename*.controller.model      | Data transfer objects for Rest API                                                    | 
+| com.*servicename*.kafka                 | Kafka consumers and producers                                                         | 
+| com.*servicename*.kafka.common          | Kafka utility classes without service specific logic                                  | 
+| com.*servicename*.kafka.mockload        | Mock implementation of consumers and producers for testing in development environment | 
+| com.*servicename*.mongo.document        | MongoDB Documents definition                                                          |
+| com.*servicename*.mongo.repository      | MongoDB data access classes                                                           |
+| com.*servicename*.service               | Business logic layer which connects all other layers together                         |
