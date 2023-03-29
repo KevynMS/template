@@ -55,17 +55,14 @@ public class Generator {
             writer.write("import lombok.NoArgsConstructor;\n");
             writer.write("import org.hibernate.annotations.GenericGenerator;\n");
             writer.write("import org.hibernate.annotations.Type;\n\n");
-
             writer.write("import java.math.BigDecimal;\n");
             writer.write("import java.time.*;\n");
             writer.write("import java.util.Set;\n");
             writer.write("import javax.persistence.*;\n");
             writer.write("import java.util.UUID;\n\n\n");
-
             writer.write("@Entity\n");
             writer.write("@Table(name = " + entity.getTableNameWithQuotationMarks() + ")\n");
             writer.write("@Data\n");
-
             writer.write("@AllArgsConstructor\n");
             writer.write("@NoArgsConstructor\n");
             writer.write("public class " + entity.getName() + " {\n\n\n");
@@ -118,8 +115,8 @@ public class Generator {
     }
 
     public static void createRequest(TableObject tableObject, String projectName) {
-        Path originPath = Paths.get(/*request*/ tableObject.getRequest().getCompleteEntityFilePath());
-        Path targetPath = Paths.get(/*request*/ tableObject.getRequest().getCompleteFilePath());
+        Path originPath = Paths.get(tableObject.getRequest().getCompleteEntityFilePath());
+        Path targetPath = Paths.get(tableObject.getRequest().getCompleteFilePath());
 
         try (BufferedReader reader = Files.newBufferedReader(originPath, StandardCharsets.UTF_8);
              BufferedWriter writer = Files.newBufferedWriter(targetPath, StandardCharsets.UTF_8)) {
@@ -141,18 +138,17 @@ public class Generator {
                 if (validLine) {
                     if (line.contains("package")) {
                         writer.write(getConstant(REQUEST_PACKAGE, projectName) + "\n\n");
-                        writer.write("import " + completeClassPath(/*entity*/ tableObject.getEntity().getName(), getConstant(ENTITY_PACKAGE, projectName)) + ";\n");
+                        writer.write("import " + completeClassPath(tableObject.getEntity().getName(), getConstant(ENTITY_PACKAGE, projectName)) + ";\n");
                     } else if (line.contains("public class")) {
-                        writer.write("public class " + /*request*/tableObject.getRequest().getName() + " {\n");
+                        writer.write("public class " + tableObject.getRequest().getName() + " {\n");
                         writer.write("\n\n");
 
-
                         if (tableObject.getTypeOfFK().equals("object")) {
-                            writer.write("\tpublic " + /*entity*/ tableObject.getEntity().getName() + " convertToEntity(){\n");
-                            writer.write("\t\t" + /*entity*/ tableObject.getEntity().getName() + " " + firstCharLowerCase(/*entity*/tableObject.getEntity().getName()) + " = new " + /*entity*/ tableObject.getEntity().getName() + "();\n\n");
+                            writer.write("\tpublic " + tableObject.getEntity().getName() + " convertToEntity(){\n");
+                            writer.write("\t\t" + tableObject.getEntity().getName() + " " + firstCharLowerCase(tableObject.getEntity().getName()) + " = new " +  tableObject.getEntity().getName() + "();\n\n");
 
                             int index = 0;
-                            for (Attributes attribute : /*entity*/tableObject.getEntity().getAttributes()) {
+                            for (Attributes attribute : tableObject.getEntity().getAttributes()) {
                                 if (index != 0) {
                                     // se tiver cardinalidade, usar o method de conversao
                                     if (!attribute.getCardinalityType().isEmpty()) {
@@ -160,10 +156,10 @@ public class Generator {
                                                 .replace("***", "this" + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "") + ".convertToEntity()") + "\n");
                                     } else {
                                         if (isCreatedOrUpdateDateControlField(attribute.getFieldNameInClass())) {
-                                            writer.write("\t\t" + firstCharLowerCase(/*entity*/tableObject.getEntity().getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
+                                            writer.write("\t\t" + firstCharLowerCase(tableObject.getEntity().getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
                                                     .replace("***", attribute.getFieldTypeInClass() + ".now()") + "\n");
                                         } else {
-                                            writer.write("\t\t" + firstCharLowerCase(/*entity*/tableObject.getEntity().getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
+                                            writer.write("\t\t" + firstCharLowerCase(tableObject.getEntity().getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
                                                     .replace("***", "this" + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "")) + "\n");
                                         }
                                     }
@@ -171,7 +167,7 @@ public class Generator {
                                 index++;
                             }
                             writer.write("\n");
-                            writer.write("\t\treturn " + firstCharLowerCase(/*entity*/tableObject.getEntity().getName()) + ";\n");
+                            writer.write("\t\treturn " + firstCharLowerCase(tableObject.getEntity().getName()) + ";\n");
                             writer.write("\t}\n");
                         }
                     } else {
@@ -277,16 +273,14 @@ public class Generator {
             for (TableObject tableObject : projectObject.getTableObjectList()) {
                 writer.write("\tprivate final " + tableObject.getRepo().getName() + " " + firstCharLowerCase(tableObject.getRepo().getName()) + ";\n\n");
             }
-
-
             for (TableObject tableObject : projectObject.getTableObjectList()) {
-                writer.write("\tpublic void save(" + tableObject.getRequest().getName() + " " + firstCharLowerCase(tableObject.getRequest().getName()/*requestName*/) + ") {\n");
+                writer.write("\tpublic void save(" + tableObject.getRequest().getName() + " " + firstCharLowerCase(tableObject.getRequest().getName()) + ") {\n");
                 if (tableObject.getTypeOfFK().equals("object")) {
 
-                    writer.write("\t\t" + firstCharLowerCase(tableObject.getRepo().getName()/*repoName*/) + ".save(" + firstCharLowerCase(tableObject.getRequest().getName()) + ".convertToEntity());\n");
+                    writer.write("\t\t" + firstCharLowerCase(tableObject.getRepo().getName()) + ".save(" + firstCharLowerCase(tableObject.getRequest().getName()) + ".convertToEntity());\n");
 
                 }else if(tableObject.getTypeOfFK().equals("just_id")) {
-                    writer.write("\t\t" + tableObject.getEntity().getName() /*entityName*/ + " " + firstCharLowerCase(/*entityName*/ tableObject.getEntity().getName()) + " = new " + /*entityName*/ tableObject.getEntity().getName() + "();\n");
+                    writer.write("\t\t" + tableObject.getEntity().getName()  + " " + firstCharLowerCase(/*entityName*/ tableObject.getEntity().getName()) + " = new " +  tableObject.getEntity().getName() + "();\n");
 
                     int index = 0;
                     for(Attributes attribute : tableObject.getEntity().getAttributes()){
@@ -294,23 +288,20 @@ public class Generator {
                         if (index != 0) {
                             if (!attribute.getCardinalityType().isEmpty()) {
 
-
                                 String recordNotFound =  '"' + attribute.getFieldNameInClass() + " not found" + '"';
                                 writer.write("\t\t" + firstCharLowerCase(tableObject.getEntity().getName()/*entityName*/) + setMethodFromFieldName(attribute.getFieldNameInClass())
-                                        //                    (first char minusculo) fieldName + ".findById(" +  request.getFieldName + ")" +   ".orElseThrow(() -> new RecordNotFoundException(error message)));"
-                                        .replace("***",
+                                       .replace("***",
                                                 firstCharLowerCase(attribute.getFieldNameInClass()) + "Repository.findById(" +
                                                 firstCharLowerCase(tableObject.getRequest().getName()) + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", ""))
                                         .replace(";", "") + ".orElseThrow(() -> new RecordNotFoundException(" + recordNotFound + ")));" + "\n");
                             } else {
-                                writer.write("\t\t" + firstCharLowerCase(tableObject.getEntity().getName()/*entityName*/) + setMethodFromFieldName(attribute.getFieldNameInClass())
-                                        .replace("***", firstCharLowerCase(tableObject.getRequest().getName()/*requestName*/) + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "")) + "\n");
+                                writer.write("\t\t" + firstCharLowerCase(tableObject.getEntity().getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
+                                        .replace("***", firstCharLowerCase(tableObject.getRequest().getName()) + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "")) + "\n");
                             }
                         }
                         index++;
                     }
-
-                    writer.write("\t\t"+ firstCharLowerCase(tableObject.getRepo().getName()/*repoName*/) + ".save(" + firstCharLowerCase(tableObject.getEntity().getName()/*entityName*/) + ");\n");
+                    writer.write("\t\t"+ firstCharLowerCase(tableObject.getRepo().getName()) + ".save(" + firstCharLowerCase(tableObject.getEntity().getName()) + ");\n");
                 }
                 writer.write("\t}\n\n");
             }
@@ -394,7 +385,6 @@ public class Generator {
             System.out.println("Error - createController method " + e.getMessage());
         }
     }
-
 
     public static void changeProject(ProjectObject projectObject) {
         Path rootPath = Paths.get("src/main/java/com/template");
