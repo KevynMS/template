@@ -11,10 +11,8 @@ public class TableObject {
 
     private String typeOfPK;
     private String typeOfFK;
-
     private Entity entity;
     private Repo repo;
     private Request request;
-
 
 }

@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -29,10 +28,11 @@ public class UserService implements UserDetailsService {
 		if (userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
 			throw new SignInException("Email already in use");
 		}
-
 		// TODO Please adapt this method to your specific project
 		User user = new User();
-		user.setFirstName(userRequest.getFirstName());
+		user.setName(userRequest.getFirstName());
+		user.setSurname(userRequest.getLastName());
+		user.setActive(userRequest.getActivated());
 		user.setEmail(userRequest.getEmail());
 		user.setPassword(bcryptEncoder.encode(userRequest.getPassword()));
 
@@ -57,13 +57,6 @@ public class UserService implements UserDetailsService {
 	}
 
 	private Set<SimpleGrantedAuthority> getAuthority(User user) {
-		/*Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-		if (user.getAuthorityByRole()) {
-			authorities.add(user.getAuthorityByRole());
-		} else {
-			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-		}
-		return authorities;*/
 		Set<SimpleGrantedAuthority> authorities = new HashSet<>();
 		authorities.add(user.getAuthorityByRole());
 
