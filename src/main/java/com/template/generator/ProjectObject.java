@@ -33,6 +33,8 @@ public class ProjectObject {
     private String maxActive;
     private String maxWait;
 
+    private String elasticPath;
+    private String elasticPort;
 
     private List<TableObject> tableObjectList;
 }

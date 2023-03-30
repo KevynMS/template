@@ -430,6 +430,8 @@ public class Generator {
                                 .replace("REDISMINIDLE", projectObject.getMinIdle())
                                 .replace("REDISMAXACTIVE", projectObject.getMaxActive())
                                 .replace("REDISMAXWAIT", projectObject.getMaxWait())
+                                .replace("ELASTICPATH", projectObject.getElasticPath())
+                                .replace("ELASTICPORT", projectObject.getElasticPort())
                                 .replace("TOKENTIME" , projectObject.getTokenTime())
                                 .replace("TOKENREFRESHTIME", projectObject.getTokenRefreshTime())
                                 .replace("TOKENKEY", projectObject.getTokenKey())
@@ -596,6 +598,12 @@ public class Generator {
                     projectObject.setMinIdle(projectValues[4].trim());
                     projectObject.setMaxActive(projectValues[5].trim());
                     projectObject.setMaxWait(projectValues[6].trim());
+                    continue;
+                }
+                if (line.startsWith("elastic")){
+                    String projectValues[] = line.replace("elastic", "").split(",");
+                    projectObject.setElasticPath(projectValues[0]);
+                    projectObject.setElasticPort(projectValues[1]);
                     continue;
                 }
                 if (line.startsWith("@@@@")) {

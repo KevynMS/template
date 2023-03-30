@@ -4,6 +4,8 @@ project template, gokids_dev, sequelize_dev, sequelize_dev, postgres_db, postgre
 token 2592000000, 1296000000, mostdev99901!
 ---- redis host, port, timeout, max-idle, min-idle, max-active, max-wait
 redis localhost, 6379, 60, 8, 0, 8, -1
+---- elasticsearch path, elasticsearch port
+elastic elasticsearch, 9200
 ---- table name, type of PK(simple_key or compose_key), type of FK(object or just_id)
 @@@@ "Attachments", simple_key, object
 id integer NOT NULL,
