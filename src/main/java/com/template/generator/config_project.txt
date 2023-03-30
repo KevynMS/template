@@ -133,9 +133,9 @@ url character varying(255),
 image_file_name character varying(255),
 image_content_type character varying(255),
 image_file_size integer
-image_updated_at timestamp(6) without time zone,
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+image_updated_at timestamp without time zone,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 region_id integer
 ****
 @@@@ affiliate_ads, simple_key, just_id
@@ -143,29 +143,29 @@ id integer NOT NULL,
 title character varying(255),
 code text
 location integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL
 ****
 @@@@ area_advertisements, simple_key, just_id
 id integer NOT NULL,
 area_id integer
 advertisement_id integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL
 ****
 @@@@ area_locations, simple_key, just_id
 id integer NOT NULL,
 area_id integer
 location_id integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL
 ****
 @@@@ areas, simple_key, just_id
 id integer NOT NULL,
 title character varying(255),
 "position" integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 slug character varying(255),
 seo_title character varying
 ****
@@ -174,8 +174,8 @@ id integer NOT NULL,
 title character varying(255),
 body text
 published boolean,
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 slug character varying(255),
 seo_description character varying,
 publish_date timestamp with time zone DEFAULT '2020-09-02 11:24:37.545+00'::timestamp with time zone NOT NULL,
@@ -186,8 +186,8 @@ title_meta character varying(255) DEFAULT ''::character varying
 id integer NOT NULL,
 title character varying(255),
 area_id integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 slug character varying(255)
 ****
 @@@@ cities, simple_key, just_id
@@ -260,8 +260,8 @@ ip_address character varying(255),
 user_agent character varying(255),
 location_id integer
 user_id integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL
 ****
 @@@@ culture_trials, simple_key, just_id
 id integer NOT NULL,
@@ -303,15 +303,15 @@ updated_at timestamp without time zone NOT NULL
 id integer NOT NULL,
 title character varying(255),
 description text
-valid_from timestamp(6) without time zone,
-valid_to timestamp(6) without time zone,
+valid_from timestamp without time zone,
+valid_to timestamp without time zone,
 banner_file_name character varying(255),
 banner_content_type character varying(255),
 banner_file_size integer
-banner_updated_at timestamp(6) without time zone,
+banner_updated_at timestamp without time zone,
 location_id integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 user_id integer
 slug character varying,
 canonical_override character varying(255),
@@ -325,10 +325,10 @@ title character varying(255),
 description text
 location_id integer
 user_id integer
-starts_at timestamp(6) without time zone,
-ends_at timestamp(6) without time zone,
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+starts_at timestamp without time zone,
+ends_at timestamp without time zone,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 slug character varying(255),
 region_id integer
 city character varying(255),
@@ -374,29 +374,29 @@ title character varying(255),
 photo_file_name character varying(255),
 photo_content_type character varying(255),
 photo_file_size integer
-photo_updated_at timestamp(6) without time zone,
+photo_updated_at timestamp without time zone,
 "position" integer
 location_id integer
 event_id integer
 page_id integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 article_id integer
 ****
 @@@@ kidslinks, simple_key, just_id
 id integer NOT NULL,
 title character varying(255),
 link character varying(255),
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 region_id integer
 ****
 @@@@ kidslinks_id_seq, simple_key, just_id
 id integer NOT NULL,
 title character varying(255),
 link character varying(255),
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 region_id integer
 ****
 @@@@ leisurekings, simple_key, just_id
@@ -416,8 +416,8 @@ banner_updated_at timestamp without time zone
 id integer NOT NULL,
 location_id integer
 category_id integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL
 ****
 @@@@ locations, simple_key, just_id
 id integer NOT NULL,
@@ -447,9 +447,9 @@ facebook character varying(255),
 area_id integer
 user_id integer
 published boolean,
-logo_updated_at timestamp(6) without time zone,
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+logo_updated_at timestamp without time zone,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 slug character varying(255),
 avr_rating integer
 featured boolean,
@@ -500,15 +500,15 @@ saturday_from character varying(255),
 saturday_to character varying(255),
 sunday_from character varying(255),
 sunday_to character varying(255),
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL
 ****
 @@@@ orders, simple_key, just_id
 id integer NOT NULL,
 user_id integer
 plan_id integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL
 ****
 @@@@ pages, simple_key, just_id
 id integer NOT NULL,
@@ -516,8 +516,8 @@ title character varying(255),
 content text
 "position" integer
 ancestry character varying(255),
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 slug character varying(255),
 excluded boolean DEFAULT false,
 frontpage boolean DEFAULT false,
@@ -531,12 +531,12 @@ id integer NOT NULL,
 logo_file_name character varying(255),
 logo_content_type character varying(255),
 logo_file_size integer
-logo_updated_at timestamp(6) without time zone,
+logo_updated_at timestamp without time zone,
 name character varying(255),
 url character varying(255),
 region_id integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL
 ****
 @@@@ plans, simple_key, just_id
 id integer NOT NULL,
@@ -557,8 +557,8 @@ newsletter boolean,
 socialmentions boolean,
 sociallinks boolean,
 deals boolean,
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 assistance boolean,
 off_peak boolean,
 reports boolean,
@@ -570,8 +570,8 @@ id integer NOT NULL,
 location_id integer
 user_id integer
 rating integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL
 ****
 @@@@ redirect_rules, simple_key, just_id
 id integer NOT NULL,
@@ -580,8 +580,8 @@ source_is_regex boolean DEFAULT false NOT NULL,
 source_is_case_sensitive boolean DEFAULT false NOT NULL,
 destination character varying(255) NOT NULL,
 active boolean DEFAULT false,
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL
 ****
 @@@@ region_articles, simple_key, just_id
 id integer NOT NULL,
@@ -616,8 +616,8 @@ id integer NOT NULL,
 name character varying(255),
 description text
 published boolean,
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 logo_file_name character varying(255),
 logo_content_type character varying(255),
 logo_file_size integer
@@ -644,8 +644,8 @@ environment_key_name character varying(255) NOT NULL,
 environment_value character varying(255) NOT NULL,
 environment_value_is_regex boolean DEFAULT false NOT NULL,
 environment_value_is_case_sensitive boolean DEFAULT true NOT NULL,
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL
 ****
 @@@@ seo_texts, simple_key, just_id
 id integer NOT NULL,
@@ -699,8 +699,8 @@ max_signups integer
 dresscode text
 sport_trial_period_id integer
 sport_type_id integer
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 "from" timestamp without time zone,
 "to" timestamp without time zone,
 signup_url character varying,
@@ -711,8 +711,8 @@ slug character varying
 @@@@ sport_types, simple_key, just_id
 id integer NOT NULL,
 name character varying(255),
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL
 ****
 @@@@ taggings, simple_key, just_id
 id integer NOT NULL,
@@ -722,7 +722,7 @@ taggable_type character varying(255),
 tagger_id integer
 tagger_type character varying(255),
 context character varying(128),
-created_at timestamp(6) without time zone
+created_at timestamp without time zone
 ****
 @@@@ tags, simple_key, just_id
 id integer NOT NULL,
@@ -733,8 +733,8 @@ id integer NOT NULL,
 main_area_id integer
 location_id integer
 ip_address character varying(255),
-created_at timestamp(6) without time zone NOT NULL,
-updated_at timestamp(6) without time zone NOT NULL,
+created_at timestamp without time zone NOT NULL,
+updated_at timestamp without time zone NOT NULL,
 name character varying(255),
 email character varying(255),
 vote_token character varying(255),
