@@ -1,5 +1,5 @@
 ---- project name, db name, user, pw, host, db type, db port
-project template, gokids_dev, sequelize_dev, sequelize_dev, postgres_db, postgresql, 5432
+project gokids, gokids_dev, sequelize_dev, sequelize_dev, postgres_db, postgresql, 5432
 ---- token time, token refresh time, token key
 token 2592000000, 1296000000, mostdev99901!
 ---- redis host, port, timeout, max-idle, min-idle, max-active, max-wait
@@ -173,7 +173,7 @@ seo_title character varying
 id integer NOT NULL,
 title character varying(255),
 body text
-published boolean,
+published boolean
 created_at timestamp without time zone NOT NULL,
 updated_at timestamp without time zone NOT NULL,
 slug character varying(255),
@@ -215,22 +215,22 @@ country character varying(255),
 latitude double precision,
 longitude double precision,
 email character varying(255),
-indoor boolean,
-outdoor boolean,
+indoor boolean
+outdoor boolean
 website_url character varying(255),
 twitter character varying(255),
 facebook character varying(255),
-published boolean,
+published boolean
 slug character varying(255),
-featured boolean,
+featured boolean
 embedcode character varying(255),
 seo_description character varying(255),
 seo_keywords character varying(255),
 priceinfo text
-tip boolean,
-age_range_1 boolean,
-age_range_2 boolean,
-age_range_3 boolean,
+tip boolean
+age_range_1 boolean
+age_range_2 boolean
+age_range_3 boolean
 wednesday boolean DEFAULT false,
 weekend boolean DEFAULT false,
 weekdays boolean DEFAULT false,
@@ -433,47 +433,47 @@ country character varying(255),
 latitude double precision,
 longitude double precision,
 email character varying(255),
-catering boolean,
-own_food boolean,
+catering boolean
+own_food boolean
 from_age integer
 to_age integer
-for_parties boolean,
-weather_proof boolean,
+for_parties boolean
+weather_proof boolean
 link character varying(255),
-free boolean,
+free boolean
 website_url character varying(255),
 twitter character varying(255),
 facebook character varying(255),
 area_id integer
 user_id integer
-published boolean,
+published boolean
 logo_updated_at timestamp without time zone,
 created_at timestamp without time zone NOT NULL,
 updated_at timestamp without time zone NOT NULL,
 slug character varying(255),
 avr_rating integer
-featured boolean,
+featured boolean
 seo_description character varying(255),
 main_area_id integer
 seo_keywords character varying(255),
 priceinfo text
 tip boolean DEFAULT false,
 embedcode character varying(255),
-nominated boolean,
+nominated boolean
 region_id integer
 only_parties boolean DEFAULT false,
-winner boolean,
+winner boolean
 group_info text
 party_info text
 show_tip boolean DEFAULT false,
 title_meta character varying,
 weather_sunny boolean DEFAULT false,
 group_friendly boolean DEFAULT false,
-age_range_1 boolean,
-age_range_2 boolean,
-age_range_3 boolean,
+age_range_1 boolean
+age_range_2 boolean
+age_range_3 boolean
 instagram character varying(255),
-corona_info boolean,
+corona_info boolean
 contact_form_option boolean DEFAULT false,
 lead_form_option boolean DEFAULT false,
 hide_address boolean DEFAULT false,
@@ -542,27 +542,27 @@ updated_at timestamp without time zone NOT NULL
 id integer NOT NULL,
 name character varying(255),
 price character varying(255),
-company_listing boolean,
+company_listing boolean
 location_description_limit character varying(255),
-featurelist boolean,
+featurelist boolean
 photolimit integer
-mapped boolean,
-website_link boolean,
-mailfriend boolean,
+mapped boolean
+website_link boolean
+mailfriend boolean
 categorylimit integer
-selfservice boolean,
-openinghours boolean,
-publishevents boolean,
-newsletter boolean,
-socialmentions boolean,
-sociallinks boolean,
-deals boolean,
+selfservice boolean
+openinghours boolean
+publishevents boolean
+newsletter boolean
+socialmentions boolean
+sociallinks boolean
+deals boolean
 created_at timestamp without time zone NOT NULL,
 updated_at timestamp without time zone NOT NULL,
-assistance boolean,
-off_peak boolean,
-reports boolean,
-wishlist boolean,
+assistance boolean
+off_peak boolean
+reports boolean
+wishlist boolean
 party boolean
 ****
 @@@@ ratings, simple_key, just_id
@@ -615,7 +615,7 @@ updated_at timestamp without time zone NOT NULL
 id integer NOT NULL,
 name character varying(255),
 description text
-published boolean,
+published boolean
 created_at timestamp without time zone NOT NULL,
 updated_at timestamp without time zone NOT NULL,
 logo_file_name character varying(255),
@@ -693,7 +693,7 @@ to_age integer
 conditions text
 days text
 times text
-price numeric,
+price numeric
 min_signups integer
 max_signups integer
 dresscode text
