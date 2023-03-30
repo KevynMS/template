@@ -644,7 +644,12 @@ public class Generator {
                         String fieldName = partsOfLine[0].replace("`", "").replace("\"", "").trim();
                         attribute.setFieldNameInTable('"' + fieldName + '"');
                         attribute.setFieldNameInClass(convertTableFieldToClassField(fieldName, false));
-                        attribute.setFieldTypeInTable(convertType(partsOfLine[1], fieldName.replace("_id", ""), position));
+
+                        attribute.setFieldTypeInTable(convertType(partsOfLine[1],
+                                fieldName.endsWith("Id")
+                                        ? fieldName.replace("Id", "")
+                                        : fieldName.replace("_id", ""),
+                                position));
 
                         if(partsOfLine[0].contains("\"")){
                             String fieldNameWithDoubleQuotationMarks = "'\"' + " + attribute.getFieldNameInTable() + " + '\"'";
