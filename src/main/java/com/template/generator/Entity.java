@@ -16,6 +16,7 @@ public class Entity {
     private String completeFilePath;
 
     private String tableName;
+
     private String tableNameWithQuotationMarks;
 
     private List<Attributes> attributes;

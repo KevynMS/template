@@ -1,16 +1,18 @@
 ---- project name, db name, user, pw, host, db type, db port
-project template, template, root, root, template, postgresql, 5432
+project template, gokids_dev, sequelize_dev, sequelize_dev, postgres_db, postgresql, 5432
 ---- token time, token refresh time, token key
 token 2592000000, 1296000000, mostdev99901!
 ---- redis host, port, timeout, max-idle, min-idle, max-active, max-wait
 redis localhost, 6379, 60, 8, 0, 8, -1
 ---- table name, type of PK(simple_key or compose_key), type of FK(object or just_id)
-@@@@ employees, simple_key, object
-id integer
-name character
-****
-@@@@ departments, simple_key, object
-id integer
-name character
-employee_id integer
+@@@@ "Attachments", simple_key, just_id
+id integer NOT NULL,
+title character varying(255),
+data json
+page_id integer
+"ClubId" integer
+"order" integer DEFAULT 0,
+"createdAt" timestamp with time zone NOT NULL,
+"updatedAt" timestamp with time zone NOT NULL,
+mimetype character varying(255)
 ****

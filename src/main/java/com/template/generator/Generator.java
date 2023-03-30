@@ -128,6 +128,7 @@ public class Generator {
             List<String> nativeJavaTypes =
                     List.of("String", "int", "Integer", "Boolean", "LocalDateTime", "BigDecimal", "double", "UUID");
 
+            Boolean isFirstAttribute = Boolean.TRUE;
             while ((line = reader.readLine()) != null) {
                 Boolean validLine = true;
                 for (String annotation : undesiredAnnotations) {
@@ -141,11 +142,11 @@ public class Generator {
                         writer.write("import " + completeClassPath(tableObject.getEntity().getName(), getConstant(ENTITY_PACKAGE, projectName)) + ";\n");
                     } else if (line.contains("public class")) {
                         writer.write("public class " + tableObject.getRequest().getName() + " {\n");
-                        writer.write("\n\n");
+                        writer.write("\n");
 
                         if (tableObject.getTypeOfFK().equals("object")) {
                             writer.write("\tpublic " + tableObject.getEntity().getName() + " convertToEntity(){\n");
-                            writer.write("\t\t" + tableObject.getEntity().getName() + " " + firstCharLowerCase(tableObject.getEntity().getName()) + " = new " +  tableObject.getEntity().getName() + "();\n\n");
+                            writer.write("\t\t" + tableObject.getEntity().getName() + " " + firstCharLowerCase(tableObject.getEntity().getName()) + " = new " +  tableObject.getEntity().getName() + "();\n");
 
                             int index = 0;
                             for (Attributes attribute : tableObject.getEntity().getAttributes()) {
@@ -191,10 +192,11 @@ public class Generator {
                                     }
                                 }
                             } else {
-                                if (!line.contains("UUID") && !line.contains("Integer") && !line.contains("Long") && !isCreatedOrUpdateDateControlField(line)) {
+                                if (!isFirstAttribute && !isCreatedOrUpdateDateControlField(line)) {
                                     writer.write(line + "\n");
                                 }
                             }
+                            isFirstAttribute = Boolean.FALSE;
                         } else {
                             writer.write(line + "\n");
                         }
@@ -259,6 +261,7 @@ public class Generator {
 
             writer.write("import java.util.ArrayList;\n");
             writer.write("import java.util.List;\n");
+            writer.write("import java.time.*;\n");
             writer.write("import " + completeClassPath("*", getConstant(ENTITY_PACKAGE, projectObject.getProjectName())) + ";\n");
             writer.write("import " + completeClassPath("*", getConstant(REPO_PACKAGE, projectObject.getProjectName())) + ";\n");
             writer.write("import " + completeClassPath("*", getConstant(REQUEST_PACKAGE, projectObject.getProjectName())) + ";\n");
@@ -295,8 +298,15 @@ public class Generator {
                                                 firstCharLowerCase(tableObject.getRequest().getName()) + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", ""))
                                         .replace(";", "") + ".orElseThrow(() -> new RecordNotFoundException(" + recordNotFound + ")));" + "\n");
                             } else {
-                                writer.write("\t\t" + firstCharLowerCase(tableObject.getEntity().getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
-                                        .replace("***", firstCharLowerCase(tableObject.getRequest().getName()) + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "")) + "\n");
+
+                                if (isCreatedOrUpdateDateControlField(attribute.getFieldNameInClass())) {
+                                    writer.write("\t\t" + firstCharLowerCase(tableObject.getEntity().getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
+                                            .replace("***", attribute.getFieldTypeInClass() + ".now()") + "\n");
+                                }else {
+
+                                    writer.write("\t\t" + firstCharLowerCase(tableObject.getEntity().getName()) + setMethodFromFieldName(attribute.getFieldNameInClass())
+                                            .replace("***", firstCharLowerCase(tableObject.getRequest().getName()) + getMethodFromFieldName(attribute.getFieldNameInClass()).replace(";", "")) + "\n");
+                                }
                             }
                         }
                         index++;
@@ -487,7 +497,7 @@ public class Generator {
     /*************************** metodos auxiliares *******************/
 
     public static String convertTableFieldToClassField(String fieldName, Boolean toClassName) {
-        StringBuilder sb = new StringBuilder(fieldName.replace("_id", ""));
+        StringBuilder sb = new StringBuilder(fieldName.replace("_id", "").replace("Id" , ""));
         for (int i = 0; i < sb.length(); i++) {
             if (sb.charAt(i) == '_') {
                 sb.deleteCharAt(i);
@@ -590,12 +600,18 @@ public class Generator {
                 }
                 if (line.startsWith("@@@@")) {
                     String tableValues[] = line.replace("@@@@", "").split(",");
-                    entity.setTableName(tableValues[0].trim());
+                    entity.setTableName(tableValues[0].replace("\"", "").trim());
                     tableObject.setTypeOfPK(tableValues[1].trim());
                     tableObject.setTypeOfFK(tableValues[2].trim());
-                    entity.setTableNameWithQuotationMarks('"' + entity.getTableName() + '"');
 
-                    String entityName = fromPluralToSingular(convertTableFieldToClassField(tableValues[0].trim(), true));
+                    if(tableValues[0].contains("\"")) {
+                        String tableWithDoubleQuotationMarks = "'\"' + " + tableValues[0].trim() + " + '\"'";
+                        entity.setTableNameWithQuotationMarks(tableWithDoubleQuotationMarks);
+                    } else{
+                        entity.setTableNameWithQuotationMarks('"' + tableValues[0].trim() + '"');
+                    }
+
+                    String entityName = fromPluralToSingular(convertTableFieldToClassField(entity.getTableName(), true));
                     String entityClass = entityName + FILE_TYPE;
                     entity.setCompleteFilePath(getConstant(ENTITY_PATH, projectObject.getProjectName()) + entityClass);
                     entity.setName(entityName);
@@ -629,8 +645,13 @@ public class Generator {
                         attribute.setFieldNameInTable('"' + fieldName + '"');
                         attribute.setFieldNameInClass(convertTableFieldToClassField(fieldName, false));
                         attribute.setFieldTypeInTable(convertType(partsOfLine[1], fieldName.replace("_id", ""), position));
+
+                        if(partsOfLine[0].contains("\"")){
+                            String fieldNameWithDoubleQuotationMarks = "'\"' + " + attribute.getFieldNameInTable() + " + '\"'";
+                            attribute.setFieldNameInTable(fieldNameWithDoubleQuotationMarks);
+                        }
                         attribute.setFieldTypeInClass(convertType(partsOfLine[1], fieldName, position));
-                        attribute.setCardinalityType(position != 0 && fieldName.contains("_id") ? "manyToOne" : "");
+                        attribute.setCardinalityType(position != 0 && (fieldName.endsWith("_id") ||  fieldName.endsWith("Id")) ? "manyToOne" : "");
 
                         // se posicao 0
 
@@ -656,12 +677,12 @@ public class Generator {
 
     public static String convertType(String originalType, String fieldName, int position) {
         //se nao for a primeiar linha mas tem id, logo e uma linha que contem uma chave estrangeira
-        if (position != 0 && fieldName.toLowerCase(Locale.ROOT).contains("_id")) {
+        if (position != 0 && (fieldName.endsWith("_id") || fieldName.endsWith("Id"))) {
             return convertTableFieldToClassField(fieldName, true);
         }
 
         List<String> convertToBoolean      = List.of("bit", "boolean");
-        List<String> convertToString       = List.of("varchar", "char", "longvarchar", "character", "text", "longtext");
+        List<String> convertToString       = List.of("varchar", "char", "longvarchar", "character", "text", "longtext", "json", "jsonb");
         List<String> convertToInteger      = List.of("int", "integer", "serial", "smallint");
         List<String> convertToLong         = List.of("bigint");
         List<String> convertToDouble       = List.of("double");
